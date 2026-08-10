@@ -11,4 +11,8 @@
     <!-- SignalR viene incluido en Microsoft.AspNetCore.App (no requiere NuGet en .NET 8) -->
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Zeroconf" Version="3.7.16" />
+  </ItemGroup>
+
 </Project>
