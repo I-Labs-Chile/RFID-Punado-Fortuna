@@ -56,7 +56,7 @@ public class SessionLogger
     public void LogGameState(GameState state)
     {
         LogRaw("GAME_STATE",
-            $"Zone:{state.ZonaId} Score:{state.Score} State:{state.MatchState} " +
-            $"Present:{state.PresentChips}/{state.TotalChips} Winner:{state.Winner ?? "N/A"}");
+            $"Phase:{state.Phase} Count:{state.TagCount}/{state.TotalChips} " +
+            $"Colors:{string.Join(",", state.ColorBreakdown.Select(kv => $"{kv.Key}={kv.Value}"))}");
     }
 }

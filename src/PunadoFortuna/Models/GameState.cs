@@ -1,20 +1,20 @@
 namespace PunadoFortuna.Models;
 
-public enum MatchState
+public enum GamePhase
 {
-    STANDBY,
-    ACTIVE,
-    RESULT
+    WAITING,
+    REVEAL_COUNT,
+    GUESS_COLORS,
+    REVEAL_COLORS
 }
 
 public class GameState
 {
-    public int ZonaId { get; set; }
-    public int Score { get; set; }
-    public MatchState MatchState { get; set; } = MatchState.STANDBY;
-    public string? Winner { get; set; }
-    public int TotalChips { get; set; }
+    public string Phase { get; set; } = "WAITING";
+    public int TagCount { get; set; }
+    public Dictionary<string, int> ColorBreakdown { get; set; } = new();
     public int PresentChips { get; set; }
-    public int AbsentChips { get; set; }
+    public int TotalChips { get; set; }
+    public List<string> PresentEpcs { get; set; } = new();
     public DateTimeOffset Timestamp { get; set; }
 }

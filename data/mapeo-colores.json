@@ -1,0 +1,27 @@
+[
+  {
+    "epc": "E28069150000501A009264E2",
+    "color": "rojo",
+    "descripcion": "Ficha 1"
+  },
+  {
+    "epc": "E28069150000401A009264E3",
+    "color": "azul",
+    "descripcion": "Ficha 2"
+  },
+  {
+    "epc": "E28069150000401A009264DF",
+    "color": "verde",
+    "descripcion": "Ficha 3"
+  },
+  {
+    "epc": "E28069150000401A009264E0",
+    "color": "amarillo",
+    "descripcion": "Ficha 4"
+  },
+  {
+    "epc": "E28069150000501A009264E1",
+    "color": "naranja",
+    "descripcion": "Ficha 5"
+  }
+]

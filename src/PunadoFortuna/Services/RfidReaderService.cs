@@ -1,4 +1,5 @@
 using PunadoFortuna.Models;
+using Symbol.RFID3;
 
 namespace PunadoFortuna.Services;
 
@@ -18,9 +19,10 @@ public class RfidReaderService : IDisposable
     private readonly ILogger<RfidReaderService> _logger;
     private readonly SessionLogger _sessionLogger;
     private readonly List<ChipMapping> _chipMappings;
+    private RFIDReader? _reader;
     private Timer? _simulationTimer;
     private readonly Random _rng = new();
-    private int _cycleCount;
+    private volatile bool _stopPolling;
 
     public bool IsConnected { get; private set; }
     public bool IsSimulationMode { get; }
@@ -48,20 +50,29 @@ public class RfidReaderService : IDisposable
             IsConnected = true;
             ConnectionChanged?.Invoke(this, new RfidConnectionEventArgs { Connected = true });
             _sessionLogger.LogRaw("CONNECTION", $"Simulated connect to {host}:{port}");
-
             _simulationTimer = new Timer(SimulateInventoryCycle, null, 0, 100);
             return;
         }
 
-        // TODO: Implementar con SDK Zebra real
-        // var reader = new RFIDReader(host, port, timeoutMs);
-        // reader.Connect();
-        // reader.Events.EventReadNotify += OnTagReadEvent;
-        // reader.Events.EventStatusNotify += OnStatusEvent;
-        // reader.Actions.Inventory.Perform();
-        // IsConnected = true;
+        await Task.Run(() =>
+        {
+            _logger.LogInformation("SDK: Conectando a {Host}:{Port}...", host, port);
 
-        await Task.CompletedTask;
+            _reader = new RFIDReader(host, (uint)port, (uint)timeoutMs);
+            _reader.Connect();
+
+            _reader.Events.ReadNotify += OnReadNotify;
+
+            _reader.Actions.Inventory.Perform();
+
+            _sessionLogger.LogRaw("CONNECTION", $"Connected to {host}:{port} via SDK");
+            _sessionLogger.LogRaw("LLRP_STARTED", $"Inventory started on {host}:{port}");
+
+            IsConnected = true;
+            ConnectionChanged?.Invoke(this, new RfidConnectionEventArgs { Connected = true });
+
+            _logger.LogInformation("SDK: Conectado y leyendo");
+        });
     }
 
     public async Task DisconnectAsync()
@@ -70,6 +81,29 @@ public class RfidReaderService : IDisposable
         {
             await _simulationTimer.DisposeAsync();
             _simulationTimer = null;
+        }
+
+        if (_reader != null && IsConnected && !IsSimulationMode)
+        {
+            await Task.Run(() =>
+            {
+                try
+                {
+                    _stopPolling = true;
+                    _reader.Actions.Inventory.Stop();
+                    _reader.Events.ReadNotify -= OnReadNotify;
+                    _reader.Disconnect();
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogWarning(ex, "Error al desconectar reader");
+                }
+                finally
+                {
+                    _reader.Dispose();
+                    _reader = null;
+                }
+            });
         }
 
         IsConnected = false;
@@ -109,15 +143,57 @@ public class RfidReaderService : IDisposable
         _sessionLogger.LogRaw("RECONNECT_FAILED", "All reconnect attempts exhausted");
     }
 
-    public async Task ResetReaderAsync()
+    private void OnReadNotify(object? sender, Events.ReadEventArgs e)
     {
-        await DisconnectAsync();
-        _logger.LogInformation("Reader reseteado");
+        if (_reader == null || _stopPolling) return;
+
+        try
+        {
+            var rawTags = _reader.Actions.GetReadTags(100);
+            if (rawTags == null || rawTags.Length == 0) return;
+
+            var tags = new List<TagRead>();
+
+            foreach (var raw in rawTags)
+            {
+                // Solo tags de inventario (sin operación de acceso)
+                if (raw.OpCode != ACCESS_OPERATION_CODE.ACCESS_OPERATION_NONE &&
+                    raw.OpCode != ACCESS_OPERATION_CODE.ACCESS_OPERATION_READ)
+                    continue;
+
+                var tag = new TagRead
+                {
+                    Epc = raw.TagID ?? "",
+                    AntennaId = (short)raw.AntennaID,
+                    PeakRssi = raw.PeakRSSI,
+                    SeenCount = (int)raw.TagSeenCount,
+                    Phase = 0, // SDK v1.2 no expone Phase directamente
+                    ChannelIndex = (short)raw.ChannelIndex,
+                    Timestamp = DateTimeOffset.UtcNow
+                };
+
+                tags.Add(tag);
+
+                _logger.LogDebug(
+                    "TAG: {Epc} ANT:{Ant} RSSI:{Rssi} CNT:{Cnt} PHASE:{Phase} CH:{Ch}",
+                    tag.Epc, tag.AntennaId, tag.PeakRssi, tag.SeenCount, tag.Phase, tag.ChannelIndex);
+            }
+
+            if (tags.Count > 0)
+            {
+                _sessionLogger.LogTagReads(tags);
+                TagsRead?.Invoke(this, new RfidReaderEventArgs { Tags = tags });
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error procesando tags del SDK");
+        }
     }
 
     private void SimulateInventoryCycle(object? state)
     {
-        _cycleCount++;
+        Interlocked.Increment(ref _cycleCount);
         var tags = new List<TagRead>();
         var now = DateTimeOffset.UtcNow;
 
@@ -146,12 +222,14 @@ public class RfidReaderService : IDisposable
         }
 
         _sessionLogger.LogTagReads(tags);
-
         TagsRead?.Invoke(this, new RfidReaderEventArgs { Tags = tags });
     }
+
+    private int _cycleCount;
 
     public void Dispose()
     {
         _simulationTimer?.Dispose();
+        _reader?.Dispose();
     }
 }

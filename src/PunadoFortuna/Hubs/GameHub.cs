@@ -17,8 +17,7 @@ public class GameHub : Hub
     public override async Task OnConnectedAsync()
     {
         _logger.LogInformation("Cliente conectado: {ConnectionId}", Context.ConnectionId);
-        var states = _gameEngine.GetAllZoneStates();
-        await Clients.Caller.SendAsync("GameStateInit", states);
+        await Clients.Caller.SendAsync("GameStateUpdate", _gameEngine.GetState());
         await base.OnConnectedAsync();
     }
 
@@ -28,13 +27,13 @@ public class GameHub : Hub
         await base.OnDisconnectedAsync(exception);
     }
 
-    public async Task ForceReset(int zonaId)
+    public async Task AdvancePhase()
     {
-        _gameEngine.ForceReset(zonaId);
+        _gameEngine.AdvancePhase();
     }
 
-    public async Task ForceResetAll()
+    public async Task Reset()
     {
-        _gameEngine.ForceResetAll();
+        _gameEngine.Reset();
     }
 }

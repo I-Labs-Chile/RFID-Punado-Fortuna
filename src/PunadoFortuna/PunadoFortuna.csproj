@@ -1,10 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net8.0-windows</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>PunadoFortuna</RootNamespace>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
   </PropertyGroup>
 
   <ItemGroup>
@@ -13,6 +14,19 @@
 
   <ItemGroup>
     <PackageReference Include="Zeroconf" Version="3.7.16" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Symbol.RFID3.Host">
+      <HintPath>C:\Program Files\Zebra RFID FXSeries Host .NET SDK\SDK\Symbol.RFID3.Host.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="RFIDAPI32PC.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>RFIDAPI32PC.dll</TargetPath>
+    </None>
   </ItemGroup>
 
 </Project>

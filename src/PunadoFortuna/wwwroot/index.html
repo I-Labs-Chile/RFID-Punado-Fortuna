@@ -18,47 +18,24 @@
     </div>
   </header>
 
-  <div class="zones">
-    <div class="zone zona-1" id="zone1">
-      <div class="zone-label">PECERA 1</div>
-      <div class="state-badge standby" id="badge1">STANDBY</div>
-      <div class="score-display">
-        <div class="score-label">PUNTAJE</div>
-        <div class="score-value" id="score1">00</div>
-      </div>
-      <div class="chips-grid" id="chips1"></div>
-      <div class="chip-count" id="chipCount1">--/--</div>
-      <div class="winner-overlay">
-        <div class="winner-text">¡GANADOR!</div>
-        <div class="winner-score" id="winnerScore1"></div>
-      </div>
+  <main class="game-area">
+    <div class="phase-badge" id="phaseBadge">ESPERANDO PIEZAS</div>
+
+    <div class="tag-counter hidden" id="tagCounterContainer">
+      <div class="counter-label">PIEZAS DETECTADAS</div>
+      <div class="counter-value" id="tagCount">0</div>
     </div>
 
-    <div class="zone zona-2" id="zone2">
-      <div class="zone-label">PECERA 2</div>
-      <div class="state-badge standby" id="badge2">STANDBY</div>
-      <div class="score-display">
-        <div class="score-label">PUNTAJE</div>
-        <div class="score-value" id="score2">00</div>
-      </div>
-      <div class="chips-grid" id="chips2"></div>
-      <div class="chip-count" id="chipCount2">--/--</div>
-      <div class="winner-overlay">
-        <div class="winner-text">¡GANADOR!</div>
-        <div class="winner-score" id="winnerScore2"></div>
-      </div>
+    <div class="color-grid hidden" id="colorGridContainer">
+      <div class="grid-label">COLORES</div>
+      <div class="grid" id="colorGrid"></div>
     </div>
-  </div>
 
-  <div class="controls">
-    <button class="btn danger" id="btnResetAll" title="F1">REINICIAR TODO</button>
-    <button class="btn" id="btnReset1" title="F2">Reiniciar Pecera 1</button>
-    <button class="btn" id="btnReset2" title="F3">Reiniciar Pecera 2</button>
-  </div>
+    <div class="enter-hint" id="enterHint">PRESIONA ENTER PARA REVELAR</div>
+  </main>
 
-  <div class="shortcut-hint">F1: Reiniciar Todo &nbsp;|&nbsp; F2/F3: Reset Zona 1/2</div>
+  <div class="shortcut-hint">F1: Reiniciar | ENTER: Avanzar</div>
 
-  <!-- SignalR client — descargar @microsoft/signalr y copiar a /js/signalr.min.js -->
   <script src="/js/signalr.min.js"></script>
   <script src="/js/game.js"></script>
 </body>

@@ -5,12 +5,15 @@
 - **Hardware**: Zebra FX9600, 2x antena AN480 (una por pecera/jugador)
 - **OS**: Windows 10/11 x86-64
 - **Runtime**: .NET 8 con ASP.NET Core minimal API + SignalR
-- **SDK RFID**: Zebra Host RFID SDK para Windows (binding .NET/C#, nunca C) — Sprint 1
+- **SDK RFID**: Zebra RFID FXSeries Host .NET SDK v1.2 (Symbol.RFID3.Host.dll) via referencia directa
 - **Frontend**: HTML/CSS/JS vanilla servido desde `wwwroot/`. SignalR client local, cero dependencias externas/CDN
 - **Supervisor**: NSSM (Non-Sucking Service Manager) — reinicio automático si crashea
+- **TargetFramework**: `net8.0-windows` (requiere Windows por SDK nativo y Symbol.RFID3.Host.dll)
 - **NuGet Packages**:
-  - `Zeroconf` 3.7.16 — descubrimiento mDNS del FX9600
-  - `System.Reactive` 5.0.0 — dependencia transitiva de Zeroconf
+  - `Zeroconf` 3.7.16 — descubrimiento mDNS (Sprint 0)
+- **Referencias directas**:
+  - `Symbol.RFID3.Host.dll` v1.2 — SDK oficial Zebra RFID FXSeries (Sprint 1)
+  - `RFIDAPI32PC.dll` — DLL nativa x64 (copiada al output)
 
 ## Arquitectura
 
@@ -116,16 +119,16 @@ dotnet run -- --no-sim      # forzar modo real (Sprint 1, actualmente sin SDK)
 - `"auto"` = pipeline automático. Al encontrar la IP, se persiste reemplazando `"auto"` por la IP concreta.
 - IP fija = se usa directamente sin scan.
 
-## Fase de descubrimiento (bloqueante — no escribir código de producción hasta completar)
+## Fase de descubrimiento
 
-1. ~~Conexión física y de red — confirmar IP del FX9600, validar ping/web UI~~ → Sprint 0
-2. Validación sin código con 123RFID Desktop — confirmar que ambas antenas leen
-3. ~~Linux/Java~~ — descartado, Windows/.NET es el camino primario
-4. Primer contacto programático — suscribirse a eventos de lectura con ambas antenas y fichas reales → Sprint 1
-5. Inspección de payload — documentar campos reales: EPC, antenna port, RSSI, timestamp, cadencia → Sprint 1
-6. Medición de ausencia — GRACE_WINDOW con datos reales (cuántos ciclos falla un tag quieto) → Sprint 2
-7. Prueba de resiliencia — desconexión real y cómo lo reporta el SDK → Sprint 1
-8. Con payloads documentados → diseñar contrato de eventos, motor de estados, y capa de resiliencia → Sprint 2
+1. ~~Conexión física y de red~~ → Sprint 0
+2. ~~Validación sin código con 123RFID Desktop~~ → OK, lee 5 tags
+3. ~~Linux/Java~~ → descartado
+4. ~~Primer contacto programático~~ → Sprint 1 (LLRP cliente propio)
+5. ~~Inspección de payload~~ → Sprint 1 (documentado en docs/LLRP.md)
+6. Medición de ausencia — GRACE_WINDOW con datos reales → Sprint 2
+7. ~~Prueba de resiliencia~~ → Sprint 1 (reconexión con backoff)
+8. Con payloads documentados → diseñar contrato de eventos → Sprint 2
 
 ## Decisiones tomadas
 
@@ -135,6 +138,8 @@ dotnet run -- --no-sim      # forzar modo real (Sprint 1, actualmente sin SDK)
 - Proyecto se estructura con stub del reader para iterar sin hardware físico
 - Auto-discovery con ping sweep + mDNS + TCP probe — plug & play sin configuración manual
 - IP descubierta se persiste en `appsettings.json` para arranques posteriores instantáneos
+- LLRP nativo (sin SDK Zebra) — implementación propia del protocolo estándar, control total del payload
+- Datos crudos LLRP capturados en session log para replay y simulación
 
 ## Estructura actualizada
 
@@ -148,7 +153,8 @@ RFID-Punado-Fortuna/
 ├── docs/
 │   ├── SETUP.md
 │   ├── NETWORK.md
-│   └── ARCHITECTURE.md
+│   ├── ARCHITECTURE.md
+│   └── SDK.md                     ← NUEVO Sprint 1
 └── src/PunadoFortuna/
     ├── appsettings.json
     ├── Program.cs
@@ -157,13 +163,13 @@ RFID-Punado-Fortuna/
     │   └── GameHub.cs
     ├── Models/
     │   ├── ChipMapping.cs
-    │   ├── DeviceDiscoveryResult.cs    ← NUEVO Sprint 0
+    │   ├── DeviceDiscoveryResult.cs    ← Sprint 0
     │   ├── GameState.cs
     │   └── TagRead.cs
     ├── Services/
-    │   ├── DeviceDiscoveryService.cs   ← NUEVO Sprint 0
+    │   ├── DeviceDiscoveryService.cs   ← Sprint 0
     │   ├── GameEngine.cs
-    │   ├── RfidReaderService.cs
+    │   ├── RfidReaderService.cs        ← MODIFICADO Sprint 1 (SDK)
     │   └── SessionLogger.cs
     └── wwwroot/
         ├── index.html
@@ -172,3 +178,47 @@ RFID-Punado-Fortuna/
         └── js/
             └── game.js
 ```
+
+## Sprint 1 — Completado: Conexión + Lectura de Tags vía SDK
+
+### Resumen
+
+Integración del SDK oficial Zebra RFID FXSeries Host .NET SDK (Symbol.RFID3 v1.2). El cliente usa `RFIDReader` para conectar al FX9600 vía LLRP en puerto 5084.
+
+| Feature | Estado |
+|---|---|
+| Conexión al FX9600 | OK |
+| Inventario continuo (`Actions.Inventory.Perform`) | OK |
+| Eventos de lectura (`Events.ReadNotify` + `GetReadTags`) | OK |
+| Parseo de TagData → TagRead (EPC, antenna, RSSI, count, channel) | OK |
+| Stop/Disconnect | OK |
+| Reconexión automática | OK |
+| Modo simulación (stub) | OK |
+
+### Arquitectura
+
+```
+RfidReaderService
+    ├── Modo simulación (default): Timer → SimulateInventoryCycle
+    └── Modo real (--no-sim): RFIDReader → TCP → FX9600:5084
+            │
+            ├── ConnectAsync → RFIDReader.Connect()
+            ├── Inventory.Perform() → lectura continua
+            ├── ReadNotify → GetReadTags(100) → TagRead[] → TagsRead event
+            └── DisconnectAsync → Inventory.Stop() + Disconnect()
+```
+
+### Flujo
+
+```
+RFIDReader(host, port, timeout) → Connect() → Inventory.Perform()
+    → ReadNotify (continuo, asincrónico) → GetReadTags() → TagsRead event
+```
+
+### Dependencias
+
+| Componente | Versión | Propósito |
+|---|---|---|
+| Symbol.RFID3.Host.dll | 1.2.0.0 | SDK gestionado (.NET) |
+| RFIDAPI32PC.dll | x64 | DLL nativa de comunicación |
+| Zeroconf | 3.7.16 | mDNS discovery (Sprint 0) |
