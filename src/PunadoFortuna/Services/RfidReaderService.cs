@@ -60,47 +60,14 @@ public class RfidReaderService : IDisposable
 
             _reader = new RFIDReader(host, (uint)port, (uint)timeoutMs);
             _reader.Connect();
-
-            // Configurar RF: potencia 14 dBm, RF mode, singulation
             _reader.Config.RadioPowerState = RADIO_POWER_STATE.ON;
+
             try
             {
-                // Listar RF mode actual de la antena 1
-                try
-                {
-                    var rf = _reader.Config.Antennas[1].GetRFMode();
-                    if (rf != null)
-                    {
-                        _logger.LogInformation("=== RF MODE ANTENA 1 ===");
-                        foreach (var p in rf.GetType().GetProperties())
-                        {
-                            try { _logger.LogInformation("  .{Name} = {Val}", p.Name, p.GetValue(rf)); }
-                            catch { }
-                        }
-                    }
-                }
-                catch (Exception ex) { _logger.LogWarning("RFMode: {Msg}", ex.Message); }
-
-                for (int a = 1; a <= 4; a++)
-                {
-                    try
-                    {
-                        // Potencia: 14 dBm (140 = 0.1 dBm units)
-                        var cfg = _reader.Config.Antennas[a].GetConfig();
-                        cfg.TransmitPowerIndex = 140;
-                        _reader.Config.Antennas[a].SetConfig(cfg);
-
-                        // Singulation: optimizar para area reducida
-                        var sing = _reader.Config.Antennas[a].GetSingulationControl();
-                        sing.Session = SESSION.SESSION_S1;
-                        sing.TagPopulation = 30;
-                        sing.TagTransitTime = 0;
-                        _reader.Config.Antennas[a].SetSingulationControl(sing);
-
-                        _logger.LogInformation("Antena {Id}: 14dBm | Session=S1 Pop=30", a);
-                    }
-                    catch { break; }
-                }
+                LogReaderCapabilities();
+                ConfigureAntenna(2);
+                _reader.Config.SaveLlrpConfig(IntPtr.Zero);
+                _logger.LogInformation("Configuración LLRP persistida en reader (SaveLlrpConfig)");
             }
             catch (Exception ex)
             {
@@ -117,7 +84,7 @@ public class RfidReaderService : IDisposable
             IsConnected = true;
             ConnectionChanged?.Invoke(this, new RfidConnectionEventArgs { Connected = true });
 
-            _logger.LogInformation("SDK: Conectado y leyendo (14dBm, Session 1)");
+            _logger.LogInformation("SDK: Conectado y leyendo (antena 2, S1, Pop=32, DenseReader, persistido)");
         });
     }
 
@@ -187,6 +154,138 @@ public class RfidReaderService : IDisposable
 
         _logger.LogError("Reconexión fallida después de 10 intentos");
         _sessionLogger.LogRaw("RECONNECT_FAILED", "All reconnect attempts exhausted");
+    }
+
+    private void LogReaderCapabilities()
+    {
+        if (_reader == null) return;
+
+        var caps = _reader.ReaderCapabilities;
+
+        var availableAntennas = _reader.Config.Antennas.AvailableAntennas;
+        _logger.LogInformation("=== CAPACIDADES DEL READER ===");
+        _logger.LogInformation("Antenas disponibles: [{Antennas}]", string.Join(", ", availableAntennas));
+        _logger.LogInformation("Modelo: {Model}", caps.ModelName ?? "N/A");
+        _logger.LogInformation("Firmware: {Fw}", caps.FirwareVersion ?? "N/A");
+
+        var txValues = caps.TransmitPowerLevelValues;
+        if (txValues != null && txValues.Length > 0)
+        {
+            _logger.LogInformation("Tabla potencias TX ({Count} valores):", txValues.Length);
+            for (int i = 0; i < txValues.Length; i++)
+                _logger.LogInformation("  Indice {Idx} = {Val} (0.1 dBm)", i, txValues[i]);
+        }
+
+        var rxValues = caps.ReceiveSensitivityValues;
+        if (rxValues != null && rxValues.Length > 0)
+        {
+            _logger.LogInformation("Tabla sensibilidad RX ({Count} valores): [{Vals}]",
+                rxValues.Length, string.Join(", ", rxValues));
+        }
+
+        try
+        {
+            var rfModes = caps.RFModes[0];
+            _logger.LogInformation("RF Modes disponibles ({Count}):", rfModes.Length);
+            for (int i = 0; i < rfModes.Length; i++)
+            {
+                var m = rfModes[i];
+                _logger.LogInformation(
+                    "  [{Idx}] ModeID={ModeId} Modulation={Mod} FLM={Flm} DivideRatio={Dr} BDR={Bdr} SpectralMask={Sm}",
+                    i, m.ModeIdentifier, m.Modulation, m.ForwardLinkModulationType,
+                    m.DivideRatio, m.BdrValue, m.SpectralMaskIndicator);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning("No se pudieron leer RF Modes: {Msg}", ex.Message);
+        }
+
+        _logger.LogInformation("=== FIN CAPACIDADES ===");
+    }
+
+    private void ConfigureAntenna(int antennaId)
+    {
+        if (_reader == null) return;
+
+        _logger.LogInformation("--- Configurando antena {Id} ---", antennaId);
+
+        var caps = _reader.ReaderCapabilities;
+        var txValues = caps.TransmitPowerLevelValues;
+
+        int powerIndex = txValues != null && txValues.Length > 0
+            ? Math.Min(30, txValues.Length - 1)
+            : 0;
+        _logger.LogInformation("Potencia: indice {Idx} (valor tabla: {Val})",
+            powerIndex, txValues != null && powerIndex < txValues.Length ? txValues[powerIndex] : "N/A");
+
+        uint rfModeIndex = SelectDenseReaderMode();
+        _logger.LogInformation("RF Mode: indice {Idx}", rfModeIndex);
+
+        var rfConfig = _reader.Config.Antennas[antennaId].GetRfConfig();
+        rfConfig.TransmitPowerIndex = (ushort)powerIndex;
+        rfConfig.RfModeTableIndex = rfModeIndex;
+        rfConfig.AntennaStopTriggerConfig.StopTriggerType =
+            ANTENNA_STOP_TRIGGER_TYPE.ANTENNA_STOP_TRIGGER_TYPE_DURATION_MILLISECS;
+        rfConfig.AntennaStopTriggerConfig.AntennaStopConditionValue = 2000;
+        _reader.Config.Antennas[antennaId].SetRfConfig(rfConfig);
+        _logger.LogInformation("SetRfConfig OK: Power={Pwr}, RFMode={Mode}, StopTrigger=2000ms",
+            powerIndex, rfModeIndex);
+
+        var sing = _reader.Config.Antennas[antennaId].GetSingulationControl();
+        sing.Session = SESSION.SESSION_S1;
+        sing.TagPopulation = 32;
+        sing.TagTransitTime = 0;
+        sing.Action.PerformStateAwareSingulationAction = false;
+        _reader.Config.Antennas[antennaId].SetSingulationControl(sing);
+        _logger.LogInformation("Singulation: Session=S1, TagPopulation=32, TransitTime=0");
+
+        var cfg = _reader.Config.Antennas[antennaId].GetConfig();
+        _logger.LogInformation("Config leida: RxSens={Rx}, TxPower={Tx}, FreqIdx={Freq}",
+            cfg.ReceiveSensitivityIndex, cfg.TransmitPowerIndex, cfg.TransmitFrequencyIndex);
+
+        _logger.LogInformation("--- Antena {Id} configurada ---", antennaId);
+    }
+
+    private uint SelectDenseReaderMode()
+    {
+        if (_reader == null) return 0;
+
+        try
+        {
+            var rfModes = _reader.ReaderCapabilities.RFModes[0];
+            if (rfModes == null || rfModes.Length == 0) return 0;
+
+            int bestIndex = rfModes.Length - 1;
+            for (int i = rfModes.Length - 1; i >= 0; i--)
+            {
+                var modStr = rfModes[i].Modulation.ToString();
+                if (modStr == "MV_8")
+                {
+                    bestIndex = i;
+                    break;
+                }
+            }
+            if (bestIndex == rfModes.Length - 1 && rfModes[bestIndex].Modulation.ToString() != "MV_8")
+            {
+                for (int i = rfModes.Length - 1; i >= 0; i--)
+                {
+                    if (rfModes[i].Modulation.ToString() == "MV_4")
+                    {
+                        bestIndex = i;
+                        break;
+                    }
+                }
+            }
+
+            _logger.LogInformation("RF Mode seleccionado: [{Idx}] {Desc}",
+                bestIndex, rfModes[bestIndex].Modulation);
+            return (uint)bestIndex;
+        }
+        catch
+        {
+            return 0;
+        }
     }
 
     private void OnReadNotify(object? sender, Events.ReadEventArgs e)

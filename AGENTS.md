@@ -179,22 +179,6 @@ RFID-Punado-Fortuna/
             └── game.js
 ```
 
-## Sprint 1 — Completado: Conexión + Lectura de Tags vía SDK
-
-### Resumen
-
-Integración del SDK oficial Zebra RFID FXSeries Host .NET SDK (Symbol.RFID3 v1.2). El cliente usa `RFIDReader` para conectar al FX9600 vía LLRP en puerto 5084.
-
-| Feature | Estado |
-|---|---|
-| Conexión al FX9600 | OK |
-| Inventario continuo (`Actions.Inventory.Perform`) | OK |
-| Eventos de lectura (`Events.ReadNotify` + `GetReadTags`) | OK |
-| Parseo de TagData → TagRead (EPC, antenna, RSSI, count, channel) | OK |
-| Stop/Disconnect | OK |
-| Reconexión automática | OK |
-| Modo simulación (stub) | OK |
-
 ### Arquitectura
 
 ```
