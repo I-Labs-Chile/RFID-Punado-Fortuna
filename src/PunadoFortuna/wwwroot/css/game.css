@@ -105,6 +105,12 @@ body {
 
 .phase-badge.reveal { color: var(--accent); border-color: var(--accent); animation: badge-glow 0.7s ease-in-out infinite; }
 .phase-badge.guess { color: var(--success); border-color: var(--success); }
+.phase-badge.ready { color: var(--success); border-color: var(--success); animation: badge-pulse 2s ease-in-out infinite; }
+
+@keyframes badge-pulse {
+  0%, 100% { box-shadow: 0 0 5px var(--success); }
+  50% { box-shadow: 0 0 15px var(--success); }
+}
 
 @keyframes badge-glow {
   0%, 100% { box-shadow: 0 0 5px currentColor; }

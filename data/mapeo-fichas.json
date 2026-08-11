@@ -1,22 +1,7 @@
 [
-  { "epc": "300833B2DDD9014000000000", "zona_id": 1, "valor": 6, "descripcion": "Ficha Z1 #1" },
-  { "epc": "300833B2DDD9014000000001", "zona_id": 1, "valor": 3, "descripcion": "Ficha Z1 #2" },
-  { "epc": "300833B2DDD9014000000002", "zona_id": 1, "valor": 8, "descripcion": "Ficha Z1 #3" },
-  { "epc": "300833B2DDD9014000000003", "zona_id": 1, "valor": 2, "descripcion": "Ficha Z1 #4" },
-  { "epc": "300833B2DDD9014000000004", "zona_id": 1, "valor": 9, "descripcion": "Ficha Z1 #5" },
-  { "epc": "300833B2DDD9014000000005", "zona_id": 1, "valor": 1, "descripcion": "Ficha Z1 #6" },
-  { "epc": "300833B2DDD9014000000006", "zona_id": 1, "valor": 5, "descripcion": "Ficha Z1 #7" },
-  { "epc": "300833B2DDD9014000000007", "zona_id": 1, "valor": 7, "descripcion": "Ficha Z1 #8" },
-  { "epc": "300833B2DDD9014000000008", "zona_id": 1, "valor": 4, "descripcion": "Ficha Z1 #9" },
-  { "epc": "300833B2DDD9014000000009", "zona_id": 1, "valor": 10, "descripcion": "Ficha Z1 #10" },
-  { "epc": "300833B2DDD9014000000010", "zona_id": 2, "valor": 5, "descripcion": "Ficha Z2 #1" },
-  { "epc": "300833B2DDD9014000000011", "zona_id": 2, "valor": 9, "descripcion": "Ficha Z2 #2" },
-  { "epc": "300833B2DDD9014000000012", "zona_id": 2, "valor": 2, "descripcion": "Ficha Z2 #3" },
-  { "epc": "300833B2DDD9014000000013", "zona_id": 2, "valor": 7, "descripcion": "Ficha Z2 #4" },
-  { "epc": "300833B2DDD9014000000014", "zona_id": 2, "valor": 1, "descripcion": "Ficha Z2 #5" },
-  { "epc": "300833B2DDD9014000000015", "zona_id": 2, "valor": 4, "descripcion": "Ficha Z2 #6" },
-  { "epc": "300833B2DDD9014000000016", "zona_id": 2, "valor": 8, "descripcion": "Ficha Z2 #7" },
-  { "epc": "300833B2DDD9014000000017", "zona_id": 2, "valor": 3, "descripcion": "Ficha Z2 #8" },
-  { "epc": "300833B2DDD9014000000018", "zona_id": 2, "valor": 6, "descripcion": "Ficha Z2 #9" },
-  { "epc": "300833B2DDD9014000000019", "zona_id": 2, "valor": 10, "descripcion": "Ficha Z2 #10" }
+  { "epc": "E28069150000501A009264E2", "zona_id": 1, "valor": 1, "descripcion": "Ficha 1" },
+  { "epc": "E28069150000401A009264E3", "zona_id": 1, "valor": 1, "descripcion": "Ficha 2" },
+  { "epc": "E28069150000401A009264DF", "zona_id": 1, "valor": 1, "descripcion": "Ficha 3" },
+  { "epc": "E28069150000401A009264E0", "zona_id": 1, "valor": 1, "descripcion": "Ficha 4" },
+  { "epc": "E28069150000501A009264E1", "zona_id": 1, "valor": 1, "descripcion": "Ficha 5" }
 ]

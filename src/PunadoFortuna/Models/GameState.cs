@@ -16,5 +16,6 @@ public class GameState
     public int PresentChips { get; set; }
     public int TotalChips { get; set; }
     public List<string> PresentEpcs { get; set; } = new();
+    public bool IsStable { get; set; }
     public DateTimeOffset Timestamp { get; set; }
 }

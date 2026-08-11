@@ -11,6 +11,9 @@ public class GameEngine
     private GamePhase _phase = GamePhase.WAITING;
     private readonly HashSet<string> _presentEpcs = new();
     private int _totalKnownChips;
+    private DateTimeOffset? _stableAt;
+    private readonly TimeSpan _stabilityWindow = TimeSpan.FromSeconds(2);
+    private bool _wasStable;
 
     public event EventHandler<GameState>? StateChanged;
 
@@ -41,7 +44,26 @@ public class GameEngine
 
         if (changed)
         {
-            _logger.LogDebug("Tags presentes: {Count}", _presentEpcs.Count);
+            // El set cambió → reiniciar ventana de estabilidad
+            _stableAt = null;
+            _wasStable = false;
+            _logger.LogDebug("Tags presentes: {Count} (inestable)", _presentEpcs.Count);
+        }
+
+        // Si hay tags y no estamos marcando estabilidad todavía, iniciar timer
+        if (_presentEpcs.Count > 0 && _stableAt == null)
+        {
+            _stableAt = DateTimeOffset.UtcNow;
+        }
+
+        // Verificar si alcanzamos estabilidad
+        bool nowStable = _presentEpcs.Count > 0
+            && _stableAt.HasValue
+            && (DateTimeOffset.UtcNow - _stableAt.Value) >= _stabilityWindow;
+
+        if (nowStable != _wasStable || changed && _presentEpcs.Count == 0)
+        {
+            _wasStable = nowStable;
             EmitState();
         }
     }
@@ -77,6 +99,8 @@ public class GameEngine
     {
         _phase = GamePhase.WAITING;
         _presentEpcs.Clear();
+        _stableAt = null;
+        _wasStable = false;
         _sessionLogger.LogRaw("GAME", "RESET");
         EmitState();
     }
@@ -84,6 +108,9 @@ public class GameEngine
     public GameState GetState()
     {
         var breakdown = GetColorBreakdown();
+        bool isStable = _presentEpcs.Count > 0
+            && _stableAt.HasValue
+            && (DateTimeOffset.UtcNow - _stableAt.Value) >= _stabilityWindow;
 
         return new GameState
         {
@@ -93,6 +120,7 @@ public class GameEngine
             PresentChips = _presentEpcs.Count,
             TotalChips = _totalKnownChips,
             PresentEpcs = _presentEpcs.ToList(),
+            IsStable = isStable,
             Timestamp = DateTimeOffset.UtcNow
         };
     }

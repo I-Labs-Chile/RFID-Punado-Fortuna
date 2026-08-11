@@ -230,6 +230,7 @@ static string FindDataFile(string filename)
     var candidates = new[]
     {
         Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "data", filename),
+        Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "data", filename),
         Path.Combine(Directory.GetCurrentDirectory(), "..", "data", filename),
         Path.Combine(Directory.GetCurrentDirectory(), "data", filename)
     };
