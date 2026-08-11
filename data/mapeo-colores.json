@@ -1,27 +1,527 @@
-[
-  {
-    "epc": "E28069150000501A009264E2",
-    "color": "rojo",
-    "descripcion": "Ficha 1"
-  },
-  {
-    "epc": "E28069150000401A009264E3",
-    "color": "azul",
-    "descripcion": "Ficha 2"
-  },
-  {
-    "epc": "E28069150000401A009264DF",
-    "color": "verde",
-    "descripcion": "Ficha 3"
-  },
-  {
-    "epc": "E28069150000401A009264E0",
-    "color": "amarillo",
-    "descripcion": "Ficha 4"
-  },
-  {
-    "epc": "E28069150000501A009264E1",
-    "color": "naranja",
-    "descripcion": "Ficha 5"
-  }
+﻿[
+    {
+        "descripcion":  "Verde #1",
+        "color":  "verde",
+        "epc":  "E2806915000040220F887DD1"
+    },
+    {
+        "descripcion":  "Verde #2",
+        "color":  "verde",
+        "epc":  "E2806915000040220F8881D1"
+    },
+    {
+        "descripcion":  "Verde #3",
+        "color":  "verde",
+        "epc":  "E2806915000040220F888DD1"
+    },
+    {
+        "descripcion":  "Verde #4",
+        "color":  "verde",
+        "epc":  "E2806915000040220F8895D1"
+    },
+    {
+        "descripcion":  "Verde #5",
+        "color":  "verde",
+        "epc":  "E2806915000040220F8899D1"
+    },
+    {
+        "descripcion":  "Verde #6",
+        "color":  "verde",
+        "epc":  "E2806915000040220F88A5D1"
+    },
+    {
+        "descripcion":  "Verde #7",
+        "color":  "verde",
+        "epc":  "E2806915000040220F88A9D1"
+    },
+    {
+        "descripcion":  "Verde #8",
+        "color":  "verde",
+        "epc":  "E2806915000040220F88B1D1"
+    },
+    {
+        "descripcion":  "Verde #9",
+        "color":  "verde",
+        "epc":  "E2806915000040220F88BDD1"
+    },
+    {
+        "descripcion":  "Verde #10",
+        "color":  "verde",
+        "epc":  "E2806915000040220F88C5D1"
+    },
+    {
+        "descripcion":  "Verde #11",
+        "color":  "verde",
+        "epc":  "E2806915000040220F88C9D1"
+    },
+    {
+        "descripcion":  "Verde #12",
+        "color":  "verde",
+        "epc":  "E2806915000050220F8885D1"
+    },
+    {
+        "descripcion":  "Verde #13",
+        "color":  "verde",
+        "epc":  "E2806915000050220F8889D1"
+    },
+    {
+        "descripcion":  "Verde #14",
+        "color":  "verde",
+        "epc":  "E2806915000050220F8891D1"
+    },
+    {
+        "descripcion":  "Verde #15",
+        "color":  "verde",
+        "epc":  "E2806915000050220F889DD1"
+    },
+    {
+        "descripcion":  "Verde #16",
+        "color":  "verde",
+        "epc":  "E2806915000050220F88A1D1"
+    },
+    {
+        "descripcion":  "Verde #17",
+        "color":  "verde",
+        "epc":  "E2806915000050220F88ADD1"
+    },
+    {
+        "descripcion":  "Verde #18",
+        "color":  "verde",
+        "epc":  "E2806915000050220F88B5D1"
+    },
+    {
+        "descripcion":  "Verde #19",
+        "color":  "verde",
+        "epc":  "E2806915000050220F88B9D1"
+    },
+    {
+        "descripcion":  "Verde #20",
+        "color":  "verde",
+        "epc":  "E2806915000050220F88C1D1"
+    },
+    {
+        "descripcion":  "Azul #1",
+        "color":  "azul",
+        "epc":  "E2806915000040220F882DD1"
+    },
+    {
+        "descripcion":  "Azul #2",
+        "color":  "azul",
+        "epc":  "E2806915000040220F8839D1"
+    },
+    {
+        "descripcion":  "Azul #3",
+        "color":  "azul",
+        "epc":  "E2806915000040220F8841D1"
+    },
+    {
+        "descripcion":  "Azul #4",
+        "color":  "azul",
+        "epc":  "E2806915000040220F884DD1"
+    },
+    {
+        "descripcion":  "Azul #5",
+        "color":  "azul",
+        "epc":  "E2806915000040220F8855D1"
+    },
+    {
+        "descripcion":  "Azul #6",
+        "color":  "azul",
+        "epc":  "E2806915000040220F8859D1"
+    },
+    {
+        "descripcion":  "Azul #7",
+        "color":  "azul",
+        "epc":  "E2806915000040220F8865D1"
+    },
+    {
+        "descripcion":  "Azul #8",
+        "color":  "azul",
+        "epc":  "E2806915000040220F8869D1"
+    },
+    {
+        "descripcion":  "Azul #9",
+        "color":  "azul",
+        "epc":  "E280691500004026A683760D"
+    },
+    {
+        "descripcion":  "Azul #10",
+        "color":  "azul",
+        "epc":  "E2806915000050220F8825D1"
+    },
+    {
+        "descripcion":  "Azul #11",
+        "color":  "azul",
+        "epc":  "E2806915000050220F8829D1"
+    },
+    {
+        "descripcion":  "Azul #12",
+        "color":  "azul",
+        "epc":  "E2806915000050220F8831D1"
+    },
+    {
+        "descripcion":  "Azul #13",
+        "color":  "azul",
+        "epc":  "E2806915000050220F8845D1"
+    },
+    {
+        "descripcion":  "Azul #14",
+        "color":  "azul",
+        "epc":  "E2806915000050220F8849D1"
+    },
+    {
+        "descripcion":  "Azul #15",
+        "color":  "azul",
+        "epc":  "E2806915000050220F8851D1"
+    },
+    {
+        "descripcion":  "Azul #16",
+        "color":  "azul",
+        "epc":  "E2806915000050220F885DD1"
+    },
+    {
+        "descripcion":  "Azul #17",
+        "color":  "azul",
+        "epc":  "E2806915000050220F886DD1"
+    },
+    {
+        "descripcion":  "Azul #18",
+        "color":  "azul",
+        "epc":  "E2806915000050220F8875D1"
+    },
+    {
+        "descripcion":  "Azul #19",
+        "color":  "azul",
+        "epc":  "E2806915000050220F8879D1"
+    },
+    {
+        "descripcion":  "Azul",
+        "color":  "azul",
+        "epc":  "E2806915000050220F8861D1"
+    },
+    {
+        "descripcion":  "Naranja",
+        "color":  "naranja",
+        "epc":  "E2806915000040220F878DD1"
+    },
+    {
+        "descripcion":  "Naranja",
+        "color":  "naranja",
+        "epc":  "E2806915000040220F8795D1"
+    },
+    {
+        "descripcion":  "Naranja",
+        "color":  "naranja",
+        "epc":  "E2806915000040220F8799D1"
+    },
+    {
+        "descripcion":  "Naranja",
+        "color":  "naranja",
+        "epc":  "E2806915000040220F87A5D1"
+    },
+    {
+        "descripcion":  "Naranja",
+        "color":  "naranja",
+        "epc":  "E2806915000040220F87A9D1"
+    },
+    {
+        "descripcion":  "Naranja",
+        "color":  "naranja",
+        "epc":  "E2806915000040220F87B1D1"
+    },
+    {
+        "descripcion":  "Naranja",
+        "color":  "naranja",
+        "epc":  "E2806915000040220F87C9D1"
+    },
+    {
+        "descripcion":  "Naranja",
+        "color":  "naranja",
+        "epc":  "E2806915000040220F87D1D1"
+    },
+    {
+        "descripcion":  "Celeste",
+        "color":  "celeste",
+        "epc":  "E2806915000040220F8821D1"
+    },
+    {
+        "descripcion":  "Naranja",
+        "color":  "naranja",
+        "epc":  "E2806915000050220F8785D1"
+    },
+    {
+        "descripcion":  "Naranja",
+        "color":  "naranja",
+        "epc":  "E2806915000050220F8789D1"
+    },
+    {
+        "descripcion":  "Naranja",
+        "color":  "naranja",
+        "epc":  "E2806915000050220F8791D1"
+    },
+    {
+        "descripcion":  "Naranja",
+        "color":  "naranja",
+        "epc":  "E2806915000050220F879DD1"
+    },
+    {
+        "descripcion":  "Naranja",
+        "color":  "naranja",
+        "epc":  "E2806915000050220F87A1D1"
+    },
+    {
+        "descripcion":  "Naranja",
+        "color":  "naranja",
+        "epc":  "E2806915000050220F87ADD1"
+    },
+    {
+        "descripcion":  "Naranja",
+        "color":  "naranja",
+        "epc":  "E2806915000050220F87B5D1"
+    },
+    {
+        "descripcion":  "Naranja",
+        "color":  "naranja",
+        "epc":  "E2806915000050220F87B9D1"
+    },
+    {
+        "descripcion":  "Naranja",
+        "color":  "naranja",
+        "epc":  "E2806915000050220F87C1D1"
+    },
+    {
+        "descripcion":  "Naranja",
+        "color":  "naranja",
+        "epc":  "E2806915000050220F87CDD1"
+    },
+    {
+        "descripcion":  "Naranja",
+        "color":  "naranja",
+        "epc":  "E280691500005026A683720D"
+    },
+    {
+        "descripcion":  "Rosado",
+        "color":  "rosado",
+        "epc":  "E2806915000040220F88D1D1"
+    },
+    {
+        "descripcion":  "Rosado",
+        "color":  "rosado",
+        "epc":  "E2806915000040220F88DDD1"
+    },
+    {
+        "descripcion":  "Rosado",
+        "color":  "rosado",
+        "epc":  "E2806915000040220F88E1D1"
+    },
+    {
+        "descripcion":  "Rosado",
+        "color":  "rosado",
+        "epc":  "E2806915000040220F88EDD1"
+    },
+    {
+        "descripcion":  "Rosado",
+        "color":  "rosado",
+        "epc":  "E2806915000040220F88F5D1"
+    },
+    {
+        "descripcion":  "Rosado",
+        "color":  "rosado",
+        "epc":  "E2806915000040220F88F9D1"
+    },
+    {
+        "descripcion":  "Rosado",
+        "color":  "rosado",
+        "epc":  "E2806915000040220F8901D1"
+    },
+    {
+        "descripcion":  "Rosado",
+        "color":  "rosado",
+        "epc":  "E2806915000040220F890DD1"
+    },
+    {
+        "descripcion":  "Rosado",
+        "color":  "rosado",
+        "epc":  "E2806915000040220F8915D1"
+    },
+    {
+        "descripcion":  "Rosado",
+        "color":  "rosado",
+        "epc":  "E2806915000040220F8919D1"
+    },
+    {
+        "descripcion":  "Rosado",
+        "color":  "rosado",
+        "epc":  "E2806915000050220F88CDD1"
+    },
+    {
+        "descripcion":  "Rosado",
+        "color":  "rosado",
+        "epc":  "E2806915000050220F88D5D1"
+    },
+    {
+        "descripcion":  "Rosado",
+        "color":  "rosado",
+        "epc":  "E2806915000050220F88D9D1"
+    },
+    {
+        "descripcion":  "Rosado",
+        "color":  "rosado",
+        "epc":  "E2806915000050220F88E5D1"
+    },
+    {
+        "descripcion":  "Rosado",
+        "color":  "rosado",
+        "epc":  "E2806915000050220F88E9D1"
+    },
+    {
+        "descripcion":  "Rosado",
+        "color":  "rosado",
+        "epc":  "E2806915000050220F88F1D1"
+    },
+    {
+        "descripcion":  "Rosado",
+        "color":  "rosado",
+        "epc":  "E2806915000050220F88FDD1"
+    },
+    {
+        "descripcion":  "Rosado",
+        "color":  "rosado",
+        "epc":  "E2806915000050220F8905D1"
+    },
+    {
+        "descripcion":  "Rosado",
+        "color":  "rosado",
+        "epc":  "E2806915000050220F8909D1"
+    },
+    {
+        "descripcion":  "Rosado",
+        "color":  "rosado",
+        "epc":  "E2806915000050220F8911D1"
+    },
+    {
+        "descripcion":  "Premio",
+        "color":  "premio",
+        "epc":  "E2806915000040220F8771D1"
+    },
+    {
+        "descripcion":  "Celeste",
+        "color":  "celeste",
+        "epc":  "E2806915000040220F87DDD1"
+    },
+    {
+        "descripcion":  "Celeste",
+        "color":  "celeste",
+        "epc":  "E2806915000040220F87E1D1"
+    },
+    {
+        "descripcion":  "Celeste",
+        "color":  "celeste",
+        "epc":  "E2806915000040220F87EDD1"
+    },
+    {
+        "descripcion":  "Celeste",
+        "color":  "celeste",
+        "epc":  "E2806915000040220F87F5D1"
+    },
+    {
+        "descripcion":  "Celeste",
+        "color":  "celeste",
+        "epc":  "E2806915000040220F8805D1"
+    },
+    {
+        "descripcion":  "Celeste",
+        "color":  "celeste",
+        "epc":  "E2806915000040220F8809D1"
+    },
+    {
+        "descripcion":  "Celeste",
+        "color":  "celeste",
+        "epc":  "E2806915000040220F8811D1"
+    },
+    {
+        "descripcion":  "Celeste",
+        "color":  "celeste",
+        "epc":  "E2806915000040220F881DD1"
+    },
+    {
+        "descripcion":  "Premio",
+        "color":  "premio",
+        "epc":  "E2806915000050220F8775D1"
+    },
+    {
+        "descripcion":  "Celeste",
+        "color":  "celeste",
+        "epc":  "E2806915000050220F87D5D1"
+    },
+    {
+        "descripcion":  "Celeste",
+        "color":  "celeste",
+        "epc":  "E2806915000050220F87D9D1"
+    },
+    {
+        "descripcion":  "Celeste",
+        "color":  "celeste",
+        "epc":  "E2806915000050220F87E5D1"
+    },
+    {
+        "descripcion":  "Celeste",
+        "color":  "celeste",
+        "epc":  "E2806915000050220F87E9D1"
+    },
+    {
+        "descripcion":  "Celeste",
+        "color":  "celeste",
+        "epc":  "E2806915000050220F87F1D1"
+    },
+    {
+        "descripcion":  "Celeste",
+        "color":  "celeste",
+        "epc":  "E2806915000050220F87FDD1"
+    },
+    {
+        "descripcion":  "Celeste",
+        "color":  "celeste",
+        "epc":  "E2806915000050220F8801D1"
+    },
+    {
+        "descripcion":  "Celeste",
+        "color":  "celeste",
+        "epc":  "E2806915000050220F880DD1"
+    },
+    {
+        "descripcion":  "Celeste",
+        "color":  "celeste",
+        "epc":  "E2806915000050220F8819D1"
+    },
+    {
+        "descripcion":  "Celeste",
+        "color":  "celeste",
+        "epc":  "E2806915000050220F8815D1"
+    },
+    {
+        "descripcion":  "Premio",
+        "color":  "premio",
+        "epc":  "E2806915000040220F877DD1"
+    },
+    {
+        "descripcion":  "Premio",
+        "color":  "premio",
+        "epc":  "E2806915000050220F8779D1"
+    },
+    {
+        "descripcion":  "Premio",
+        "color":  "premio",
+        "epc":  "E2806915000040220F8781D1"
+    },
+    {
+        "descripcion":  "Celeste",
+        "color":  "celeste",
+        "epc":  "E2806915000040220F87F9D1"
+    },
+    {
+        "descripcion":  "Naranja",
+        "color":  "naranja",
+        "epc":  "E2806915000040220F87BDD1"
+    }
 ]

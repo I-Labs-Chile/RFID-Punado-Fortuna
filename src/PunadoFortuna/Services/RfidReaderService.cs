@@ -61,6 +61,52 @@ public class RfidReaderService : IDisposable
             _reader = new RFIDReader(host, (uint)port, (uint)timeoutMs);
             _reader.Connect();
 
+            // Configurar RF: potencia 14 dBm, RF mode, singulation
+            _reader.Config.RadioPowerState = RADIO_POWER_STATE.ON;
+            try
+            {
+                // Listar RF mode actual de la antena 1
+                try
+                {
+                    var rf = _reader.Config.Antennas[1].GetRFMode();
+                    if (rf != null)
+                    {
+                        _logger.LogInformation("=== RF MODE ANTENA 1 ===");
+                        foreach (var p in rf.GetType().GetProperties())
+                        {
+                            try { _logger.LogInformation("  .{Name} = {Val}", p.Name, p.GetValue(rf)); }
+                            catch { }
+                        }
+                    }
+                }
+                catch (Exception ex) { _logger.LogWarning("RFMode: {Msg}", ex.Message); }
+
+                for (int a = 1; a <= 4; a++)
+                {
+                    try
+                    {
+                        // Potencia: 14 dBm (140 = 0.1 dBm units)
+                        var cfg = _reader.Config.Antennas[a].GetConfig();
+                        cfg.TransmitPowerIndex = 140;
+                        _reader.Config.Antennas[a].SetConfig(cfg);
+
+                        // Singulation: optimizar para area reducida
+                        var sing = _reader.Config.Antennas[a].GetSingulationControl();
+                        sing.Session = SESSION.SESSION_S1;
+                        sing.TagPopulation = 30;
+                        sing.TagTransitTime = 0;
+                        _reader.Config.Antennas[a].SetSingulationControl(sing);
+
+                        _logger.LogInformation("Antena {Id}: 14dBm | Session=S1 Pop=30", a);
+                    }
+                    catch { break; }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Config RF parcial. Usando defaults.");
+            }
+
             _reader.Events.ReadNotify += OnReadNotify;
 
             _reader.Actions.Inventory.Perform();
@@ -71,7 +117,7 @@ public class RfidReaderService : IDisposable
             IsConnected = true;
             ConnectionChanged?.Invoke(this, new RfidConnectionEventArgs { Connected = true });
 
-            _logger.LogInformation("SDK: Conectado y leyendo");
+            _logger.LogInformation("SDK: Conectado y leyendo (14dBm, Session 1)");
         });
     }
 

@@ -318,38 +318,93 @@ public class RfidBackgroundService : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
+        _logger.LogInformation("=== Protocolo de conexión iniciado ===");
+
+        // Esperar que el puerto se libere (por si 123RFID estaba corriendo)
+        _logger.LogInformation("Esperando 3s para estabilización del puerto...");
+        await Task.Delay(3000, stoppingToken);
+
         var host = _discoveryResult.IpAddress;
         var port = _discoveryResult.Port;
 
         if (host == null)
         {
-            _logger.LogWarning("FX9600 no encontrado al inicio. Entrando en modo búsqueda continua...");
-            while (!stoppingToken.IsCancellationRequested && host == null)
-            {
-                _logger.LogInformation("Reintentando descubrimiento del FX9600...");
-                var result = await _discoveryService.DiscoverAsync(null, port, stoppingToken);
-                host = result.IpAddress;
-                if (host == null)
-                {
-                    _logger.LogInformation("FX9600 aún no encontrado. Reintentando en 10s...");
-                    await Task.Delay(10000, stoppingToken);
-                }
-            }
-        }
-
-        if (host != null)
-        {
-            _logger.LogInformation("Conectando al reader en {Host}:{Port}...", host, port);
-            await _readerService.ConnectAsync(host, port);
+            _logger.LogInformation("IP no configurada. Ejecutando descubrimiento...");
+            host = await DiscoverWithRetry(port, stoppingToken);
         }
         else
         {
-            _logger.LogError("No se pudo encontrar el FX9600 después de múltiples intentos");
+            _logger.LogInformation("IP configurada: {Host}:{Port}. Verificando...", host, port);
+            var alive = await ProbeReaderAsync(host, port);
+            if (!alive)
+            {
+                _logger.LogWarning("IP configurada no responde. Ejecutando descubrimiento...");
+                host = await DiscoverWithRetry(port, stoppingToken);
+            }
+        }
+
+        if (host == null)
+        {
+            _logger.LogError("No se pudo encontrar el FX9600. Modo offline.");
+            while (!stoppingToken.IsCancellationRequested)
+                await Task.Delay(5000, stoppingToken);
+            return;
+        }
+
+        _logger.LogInformation("FX9600 confirmado en {Host}:{Port}. Conectando SDK...", host, port);
+
+        // Conexión con reintentos
+        for (int attempt = 1; attempt <= 5; attempt++)
+        {
+            try
+            {
+                await _readerService.ConnectAsync(host, port);
+                _logger.LogInformation("Conexión establecida y leyendo");
+                break;
+            }
+            catch (Exception ex) when (attempt < 5)
+            {
+                _logger.LogWarning(ex, "Intento {Attempt}/5 fallido. Reintentando en {Delay}s...",
+                    attempt, attempt * 2);
+                await Task.Delay(attempt * 2000, stoppingToken);
+            }
         }
 
         while (!stoppingToken.IsCancellationRequested)
             await Task.Delay(1000, stoppingToken);
 
         await _readerService.DisconnectAsync();
+    }
+
+    private async Task<string?> DiscoverWithRetry(int port, CancellationToken ct)
+    {
+        for (int attempt = 1; attempt <= 10; attempt++)
+        {
+            var result = await _discoveryService.DiscoverAsync(null, port, ct);
+            if (result.IpAddress != null)
+            {
+                _logger.LogInformation("FX9600 descubierto: {Ip} ({Method})",
+                    result.IpAddress, result.DiscoveryMethod);
+                return result.IpAddress;
+            }
+
+            _logger.LogInformation("Intento {Attempt}/10 sin resultado. Reintentando en 5s...", attempt);
+            await Task.Delay(5000, ct);
+        }
+        return null;
+    }
+
+    private static async Task<bool> ProbeReaderAsync(string host, int port)
+    {
+        try
+        {
+            using var client = new System.Net.Sockets.TcpClient();
+            await client.ConnectAsync(host, port).WaitAsync(TimeSpan.FromSeconds(3));
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
     }
 }

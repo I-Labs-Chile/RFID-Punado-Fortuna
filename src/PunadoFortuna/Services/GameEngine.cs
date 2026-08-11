@@ -9,11 +9,14 @@ public class GameEngine
     private readonly Dictionary<string, string> _epcColorMap;
 
     private GamePhase _phase = GamePhase.WAITING;
+    private readonly Dictionary<string, int> _epcSeen = new();
     private readonly HashSet<string> _presentEpcs = new();
     private int _totalKnownChips;
     private DateTimeOffset? _stableAt;
-    private readonly TimeSpan _stabilityWindow = TimeSpan.FromSeconds(2);
+    private readonly TimeSpan _stabilityWindow = TimeSpan.FromSeconds(3);
     private bool _wasStable;
+    private const int MinObservations = 2;
+    private const int MaxObservations = 5;
 
     public event EventHandler<GameState>? StateChanged;
 
@@ -38,30 +41,31 @@ public class GameEngine
 
         foreach (var epc in seen)
         {
-            if (_presentEpcs.Add(epc))
-                changed = true;
+            if (!_epcSeen.ContainsKey(epc))
+                _epcSeen[epc] = 0;
+            _epcSeen[epc]++;
+
+            if (_epcSeen[epc] >= MinObservations)
+            {
+                if (_presentEpcs.Add(epc))
+                    changed = true;
+            }
         }
 
         if (changed)
         {
-            // El set cambió → reiniciar ventana de estabilidad
             _stableAt = null;
             _wasStable = false;
-            _logger.LogDebug("Tags presentes: {Count} (inestable)", _presentEpcs.Count);
         }
 
-        // Si hay tags y no estamos marcando estabilidad todavía, iniciar timer
         if (_presentEpcs.Count > 0 && _stableAt == null)
-        {
             _stableAt = DateTimeOffset.UtcNow;
-        }
 
-        // Verificar si alcanzamos estabilidad
         bool nowStable = _presentEpcs.Count > 0
             && _stableAt.HasValue
             && (DateTimeOffset.UtcNow - _stableAt.Value) >= _stabilityWindow;
 
-        if (nowStable != _wasStable || changed && _presentEpcs.Count == 0)
+        if (nowStable != _wasStable || (changed && _presentEpcs.Count == 0))
         {
             _wasStable = nowStable;
             EmitState();
@@ -74,24 +78,17 @@ public class GameEngine
         {
             case GamePhase.WAITING:
                 _phase = GamePhase.REVEAL_COUNT;
-                _sessionLogger.LogRaw("GAME", $"REVEAL_COUNT: {_presentEpcs.Count} tags");
                 break;
-
             case GamePhase.REVEAL_COUNT:
                 _phase = GamePhase.GUESS_COLORS;
-                _sessionLogger.LogRaw("GAME", "GUESS_COLORS phase");
                 break;
-
             case GamePhase.GUESS_COLORS:
                 _phase = GamePhase.REVEAL_COLORS;
-                _sessionLogger.LogRaw("GAME", $"REVEAL_COLORS: {string.Join(", ", GetColorBreakdown().Select(kv => $"{kv.Key}={kv.Value}"))}");
                 break;
-
             case GamePhase.REVEAL_COLORS:
                 Reset();
                 return;
         }
-
         EmitState();
     }
 
@@ -99,9 +96,9 @@ public class GameEngine
     {
         _phase = GamePhase.WAITING;
         _presentEpcs.Clear();
+        _epcSeen.Clear();
         _stableAt = null;
         _wasStable = false;
-        _sessionLogger.LogRaw("GAME", "RESET");
         EmitState();
     }
 
@@ -140,7 +137,8 @@ public class GameEngine
 
     private void EmitState()
     {
-        _sessionLogger.LogGameState(GetState());
-        StateChanged?.Invoke(this, GetState());
+        var state = GetState();
+        _sessionLogger.LogGameState(state);
+        StateChanged?.Invoke(this, state);
     }
 }

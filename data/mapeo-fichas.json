@@ -1,7 +1,236 @@
-[
-  { "epc": "E28069150000501A009264E2", "zona_id": 1, "valor": 1, "descripcion": "Ficha 1" },
-  { "epc": "E28069150000401A009264E3", "zona_id": 1, "valor": 1, "descripcion": "Ficha 2" },
-  { "epc": "E28069150000401A009264DF", "zona_id": 1, "valor": 1, "descripcion": "Ficha 3" },
-  { "epc": "E28069150000401A009264E0", "zona_id": 1, "valor": 1, "descripcion": "Ficha 4" },
-  { "epc": "E28069150000501A009264E1", "zona_id": 1, "valor": 1, "descripcion": "Ficha 5" }
+﻿[
+    {
+        "valor":  1,
+        "zona_id":  1,
+        "descripcion":  "Ficha #1",
+        "epc":  "E2806915000040220F887DD1"
+    },
+    {
+        "valor":  1,
+        "zona_id":  1,
+        "descripcion":  "Ficha #2",
+        "epc":  "E2806915000040220F8881D1"
+    },
+    {
+        "valor":  1,
+        "zona_id":  1,
+        "descripcion":  "Ficha #3",
+        "epc":  "E2806915000040220F888DD1"
+    },
+    {
+        "valor":  1,
+        "zona_id":  1,
+        "descripcion":  "Ficha #4",
+        "epc":  "E2806915000040220F8895D1"
+    },
+    {
+        "valor":  1,
+        "zona_id":  1,
+        "descripcion":  "Ficha #5",
+        "epc":  "E2806915000040220F8899D1"
+    },
+    {
+        "valor":  1,
+        "zona_id":  1,
+        "descripcion":  "Ficha #6",
+        "epc":  "E2806915000040220F88A5D1"
+    },
+    {
+        "valor":  1,
+        "zona_id":  1,
+        "descripcion":  "Ficha #7",
+        "epc":  "E2806915000040220F88A9D1"
+    },
+    {
+        "valor":  1,
+        "zona_id":  1,
+        "descripcion":  "Ficha #8",
+        "epc":  "E2806915000040220F88B1D1"
+    },
+    {
+        "valor":  1,
+        "zona_id":  1,
+        "descripcion":  "Ficha #9",
+        "epc":  "E2806915000040220F88BDD1"
+    },
+    {
+        "valor":  1,
+        "zona_id":  1,
+        "descripcion":  "Ficha #10",
+        "epc":  "E2806915000040220F88C5D1"
+    },
+    {
+        "valor":  1,
+        "zona_id":  1,
+        "descripcion":  "Ficha #11",
+        "epc":  "E2806915000040220F88C9D1"
+    },
+    {
+        "valor":  1,
+        "zona_id":  1,
+        "descripcion":  "Ficha #12",
+        "epc":  "E2806915000050220F8885D1"
+    },
+    {
+        "valor":  1,
+        "zona_id":  1,
+        "descripcion":  "Ficha #13",
+        "epc":  "E2806915000050220F8889D1"
+    },
+    {
+        "valor":  1,
+        "zona_id":  1,
+        "descripcion":  "Ficha #14",
+        "epc":  "E2806915000050220F8891D1"
+    },
+    {
+        "valor":  1,
+        "zona_id":  1,
+        "descripcion":  "Ficha #15",
+        "epc":  "E2806915000050220F889DD1"
+    },
+    {
+        "valor":  1,
+        "zona_id":  1,
+        "descripcion":  "Ficha #16",
+        "epc":  "E2806915000050220F88A1D1"
+    },
+    {
+        "valor":  1,
+        "zona_id":  1,
+        "descripcion":  "Ficha #17",
+        "epc":  "E2806915000050220F88ADD1"
+    },
+    {
+        "valor":  1,
+        "zona_id":  1,
+        "descripcion":  "Ficha #18",
+        "epc":  "E2806915000050220F88B5D1"
+    },
+    {
+        "valor":  1,
+        "zona_id":  1,
+        "descripcion":  "Ficha #19",
+        "epc":  "E2806915000050220F88B9D1"
+    },
+    {
+        "valor":  1,
+        "zona_id":  1,
+        "descripcion":  "Ficha #20",
+        "epc":  "E2806915000050220F88C1D1"
+    },
+    {
+        "valor":  1,
+        "zona_id":  1,
+        "descripcion":  "Ficha #21",
+        "epc":  "E2806915000040220F882DD1"
+    },
+    {
+        "valor":  1,
+        "zona_id":  1,
+        "descripcion":  "Ficha #22",
+        "epc":  "E2806915000040220F8839D1"
+    },
+    {
+        "valor":  1,
+        "zona_id":  1,
+        "descripcion":  "Ficha #23",
+        "epc":  "E2806915000040220F8841D1"
+    },
+    {
+        "valor":  1,
+        "zona_id":  1,
+        "descripcion":  "Ficha #24",
+        "epc":  "E2806915000040220F884DD1"
+    },
+    {
+        "valor":  1,
+        "zona_id":  1,
+        "descripcion":  "Ficha #25",
+        "epc":  "E2806915000040220F8855D1"
+    },
+    {
+        "valor":  1,
+        "zona_id":  1,
+        "descripcion":  "Ficha #26",
+        "epc":  "E2806915000040220F8859D1"
+    },
+    {
+        "valor":  1,
+        "zona_id":  1,
+        "descripcion":  "Ficha #27",
+        "epc":  "E2806915000040220F8865D1"
+    },
+    {
+        "valor":  1,
+        "zona_id":  1,
+        "descripcion":  "Ficha #28",
+        "epc":  "E2806915000040220F8869D1"
+    },
+    {
+        "valor":  1,
+        "zona_id":  1,
+        "descripcion":  "Ficha #29",
+        "epc":  "E280691500004026A683760D"
+    },
+    {
+        "valor":  1,
+        "zona_id":  1,
+        "descripcion":  "Ficha #30",
+        "epc":  "E2806915000050220F8825D1"
+    },
+    {
+        "valor":  1,
+        "zona_id":  1,
+        "descripcion":  "Ficha #31",
+        "epc":  "E2806915000050220F8829D1"
+    },
+    {
+        "valor":  1,
+        "zona_id":  1,
+        "descripcion":  "Ficha #32",
+        "epc":  "E2806915000050220F8831D1"
+    },
+    {
+        "valor":  1,
+        "zona_id":  1,
+        "descripcion":  "Ficha #33",
+        "epc":  "E2806915000050220F8845D1"
+    },
+    {
+        "valor":  1,
+        "zona_id":  1,
+        "descripcion":  "Ficha #34",
+        "epc":  "E2806915000050220F8849D1"
+    },
+    {
+        "valor":  1,
+        "zona_id":  1,
+        "descripcion":  "Ficha #35",
+        "epc":  "E2806915000050220F8851D1"
+    },
+    {
+        "valor":  1,
+        "zona_id":  1,
+        "descripcion":  "Ficha #36",
+        "epc":  "E2806915000050220F885DD1"
+    },
+    {
+        "valor":  1,
+        "zona_id":  1,
+        "descripcion":  "Ficha #37",
+        "epc":  "E2806915000050220F886DD1"
+    },
+    {
+        "valor":  1,
+        "zona_id":  1,
+        "descripcion":  "Ficha #38",
+        "epc":  "E2806915000050220F8875D1"
+    },
+    {
+        "valor":  1,
+        "zona_id":  1,
+        "descripcion":  "Ficha #39",
+        "epc":  "E2806915000050220F8879D1"
+    }
 ]
