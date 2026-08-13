@@ -1,236 +1,632 @@
-﻿[
+[
     {
         "valor":  1,
         "zona_id":  1,
-        "descripcion":  "Ficha #1",
+        "descripcion":  "Verde #1",
         "epc":  "E2806915000040220F887DD1"
     },
     {
         "valor":  1,
         "zona_id":  1,
-        "descripcion":  "Ficha #2",
+        "descripcion":  "Verde #2",
         "epc":  "E2806915000040220F8881D1"
     },
     {
         "valor":  1,
         "zona_id":  1,
-        "descripcion":  "Ficha #3",
+        "descripcion":  "Verde #3",
         "epc":  "E2806915000040220F888DD1"
     },
     {
         "valor":  1,
         "zona_id":  1,
-        "descripcion":  "Ficha #4",
+        "descripcion":  "Verde #4",
         "epc":  "E2806915000040220F8895D1"
     },
     {
         "valor":  1,
         "zona_id":  1,
-        "descripcion":  "Ficha #5",
+        "descripcion":  "Verde #5",
         "epc":  "E2806915000040220F8899D1"
     },
     {
         "valor":  1,
         "zona_id":  1,
-        "descripcion":  "Ficha #6",
+        "descripcion":  "Verde #6",
         "epc":  "E2806915000040220F88A5D1"
     },
     {
         "valor":  1,
         "zona_id":  1,
-        "descripcion":  "Ficha #7",
+        "descripcion":  "Verde #7",
         "epc":  "E2806915000040220F88A9D1"
     },
     {
         "valor":  1,
         "zona_id":  1,
-        "descripcion":  "Ficha #8",
+        "descripcion":  "Verde #8",
         "epc":  "E2806915000040220F88B1D1"
     },
     {
         "valor":  1,
         "zona_id":  1,
-        "descripcion":  "Ficha #9",
+        "descripcion":  "Verde #9",
         "epc":  "E2806915000040220F88BDD1"
     },
     {
         "valor":  1,
         "zona_id":  1,
-        "descripcion":  "Ficha #10",
+        "descripcion":  "Verde #10",
         "epc":  "E2806915000040220F88C5D1"
     },
     {
         "valor":  1,
         "zona_id":  1,
-        "descripcion":  "Ficha #11",
+        "descripcion":  "Verde #11",
         "epc":  "E2806915000040220F88C9D1"
     },
     {
         "valor":  1,
         "zona_id":  1,
-        "descripcion":  "Ficha #12",
+        "descripcion":  "Verde #12",
         "epc":  "E2806915000050220F8885D1"
     },
     {
         "valor":  1,
         "zona_id":  1,
-        "descripcion":  "Ficha #13",
+        "descripcion":  "Verde #13",
         "epc":  "E2806915000050220F8889D1"
     },
     {
         "valor":  1,
         "zona_id":  1,
-        "descripcion":  "Ficha #14",
+        "descripcion":  "Verde #14",
         "epc":  "E2806915000050220F8891D1"
     },
     {
         "valor":  1,
         "zona_id":  1,
-        "descripcion":  "Ficha #15",
+        "descripcion":  "Verde #15",
         "epc":  "E2806915000050220F889DD1"
     },
     {
         "valor":  1,
         "zona_id":  1,
-        "descripcion":  "Ficha #16",
+        "descripcion":  "Verde #16",
         "epc":  "E2806915000050220F88A1D1"
     },
     {
         "valor":  1,
         "zona_id":  1,
-        "descripcion":  "Ficha #17",
+        "descripcion":  "Verde #17",
         "epc":  "E2806915000050220F88ADD1"
     },
     {
         "valor":  1,
         "zona_id":  1,
-        "descripcion":  "Ficha #18",
+        "descripcion":  "Verde #18",
         "epc":  "E2806915000050220F88B5D1"
     },
     {
         "valor":  1,
         "zona_id":  1,
-        "descripcion":  "Ficha #19",
+        "descripcion":  "Verde #19",
         "epc":  "E2806915000050220F88B9D1"
     },
     {
         "valor":  1,
         "zona_id":  1,
-        "descripcion":  "Ficha #20",
+        "descripcion":  "Verde #20",
         "epc":  "E2806915000050220F88C1D1"
     },
     {
         "valor":  1,
         "zona_id":  1,
-        "descripcion":  "Ficha #21",
+        "descripcion":  "Azul #1",
         "epc":  "E2806915000040220F882DD1"
     },
     {
         "valor":  1,
         "zona_id":  1,
-        "descripcion":  "Ficha #22",
+        "descripcion":  "Azul #2",
         "epc":  "E2806915000040220F8839D1"
     },
     {
         "valor":  1,
         "zona_id":  1,
-        "descripcion":  "Ficha #23",
+        "descripcion":  "Azul #3",
         "epc":  "E2806915000040220F8841D1"
     },
     {
         "valor":  1,
         "zona_id":  1,
-        "descripcion":  "Ficha #24",
+        "descripcion":  "Azul #4",
         "epc":  "E2806915000040220F884DD1"
     },
     {
         "valor":  1,
         "zona_id":  1,
-        "descripcion":  "Ficha #25",
+        "descripcion":  "Azul #5",
         "epc":  "E2806915000040220F8855D1"
     },
     {
         "valor":  1,
         "zona_id":  1,
-        "descripcion":  "Ficha #26",
+        "descripcion":  "Azul #6",
         "epc":  "E2806915000040220F8859D1"
     },
     {
         "valor":  1,
         "zona_id":  1,
-        "descripcion":  "Ficha #27",
+        "descripcion":  "Azul #7",
         "epc":  "E2806915000040220F8865D1"
     },
     {
         "valor":  1,
         "zona_id":  1,
-        "descripcion":  "Ficha #28",
+        "descripcion":  "Azul #8",
         "epc":  "E2806915000040220F8869D1"
     },
     {
         "valor":  1,
         "zona_id":  1,
-        "descripcion":  "Ficha #29",
+        "descripcion":  "Azul #9",
         "epc":  "E280691500004026A683760D"
     },
     {
         "valor":  1,
         "zona_id":  1,
-        "descripcion":  "Ficha #30",
+        "descripcion":  "Azul #10",
         "epc":  "E2806915000050220F8825D1"
     },
     {
         "valor":  1,
         "zona_id":  1,
-        "descripcion":  "Ficha #31",
+        "descripcion":  "Azul #11",
         "epc":  "E2806915000050220F8829D1"
     },
     {
         "valor":  1,
         "zona_id":  1,
-        "descripcion":  "Ficha #32",
+        "descripcion":  "Azul #12",
         "epc":  "E2806915000050220F8831D1"
     },
     {
         "valor":  1,
         "zona_id":  1,
-        "descripcion":  "Ficha #33",
+        "descripcion":  "Azul #13",
         "epc":  "E2806915000050220F8845D1"
     },
     {
         "valor":  1,
         "zona_id":  1,
-        "descripcion":  "Ficha #34",
+        "descripcion":  "Azul #14",
         "epc":  "E2806915000050220F8849D1"
     },
     {
         "valor":  1,
         "zona_id":  1,
-        "descripcion":  "Ficha #35",
+        "descripcion":  "Azul #15",
         "epc":  "E2806915000050220F8851D1"
     },
     {
         "valor":  1,
         "zona_id":  1,
-        "descripcion":  "Ficha #36",
+        "descripcion":  "Azul #16",
         "epc":  "E2806915000050220F885DD1"
     },
     {
         "valor":  1,
         "zona_id":  1,
-        "descripcion":  "Ficha #37",
+        "descripcion":  "Azul #17",
         "epc":  "E2806915000050220F886DD1"
     },
     {
         "valor":  1,
         "zona_id":  1,
-        "descripcion":  "Ficha #38",
+        "descripcion":  "Azul #18",
         "epc":  "E2806915000050220F8875D1"
     },
     {
         "valor":  1,
         "zona_id":  1,
-        "descripcion":  "Ficha #39",
+        "descripcion":  "Azul #19",
         "epc":  "E2806915000050220F8879D1"
+    },
+    {
+        "valor":  1,
+        "zona_id":  1,
+        "descripcion":  "Azul #20",
+        "epc":  "E2806915000050220F8861D1"
+    },
+    {
+        "valor":  1,
+        "zona_id":  1,
+        "descripcion":  "Naranja #1",
+        "epc":  "E2806915000040220F878DD1"
+    },
+    {
+        "valor":  1,
+        "zona_id":  1,
+        "descripcion":  "Naranja #2",
+        "epc":  "E2806915000040220F8795D1"
+    },
+    {
+        "valor":  1,
+        "zona_id":  1,
+        "descripcion":  "Naranja #3",
+        "epc":  "E2806915000040220F8799D1"
+    },
+    {
+        "valor":  1,
+        "zona_id":  1,
+        "descripcion":  "Naranja #4",
+        "epc":  "E2806915000040220F87A5D1"
+    },
+    {
+        "valor":  1,
+        "zona_id":  1,
+        "descripcion":  "Naranja #5",
+        "epc":  "E2806915000040220F87A9D1"
+    },
+    {
+        "valor":  1,
+        "zona_id":  1,
+        "descripcion":  "Naranja #6",
+        "epc":  "E2806915000040220F87B1D1"
+    },
+    {
+        "valor":  1,
+        "zona_id":  1,
+        "descripcion":  "Naranja #7",
+        "epc":  "E2806915000040220F87C9D1"
+    },
+    {
+        "valor":  1,
+        "zona_id":  1,
+        "descripcion":  "Naranja #8",
+        "epc":  "E2806915000040220F87D1D1"
+    },
+    {
+        "valor":  1,
+        "zona_id":  1,
+        "descripcion":  "Naranja #9",
+        "epc":  "E2806915000040220F87BDD1"
+    },
+    {
+        "valor":  1,
+        "zona_id":  1,
+        "descripcion":  "Naranja #10",
+        "epc":  "E2806915000050220F8785D1"
+    },
+    {
+        "valor":  1,
+        "zona_id":  1,
+        "descripcion":  "Naranja #11",
+        "epc":  "E2806915000050220F8789D1"
+    },
+    {
+        "valor":  1,
+        "zona_id":  1,
+        "descripcion":  "Naranja #12",
+        "epc":  "E2806915000050220F8791D1"
+    },
+    {
+        "valor":  1,
+        "zona_id":  1,
+        "descripcion":  "Naranja #13",
+        "epc":  "E2806915000050220F879DD1"
+    },
+    {
+        "valor":  1,
+        "zona_id":  1,
+        "descripcion":  "Naranja #14",
+        "epc":  "E2806915000050220F87A1D1"
+    },
+    {
+        "valor":  1,
+        "zona_id":  1,
+        "descripcion":  "Naranja #15",
+        "epc":  "E2806915000050220F87ADD1"
+    },
+    {
+        "valor":  1,
+        "zona_id":  1,
+        "descripcion":  "Naranja #16",
+        "epc":  "E2806915000050220F87B5D1"
+    },
+    {
+        "valor":  1,
+        "zona_id":  1,
+        "descripcion":  "Naranja #17",
+        "epc":  "E2806915000050220F87B9D1"
+    },
+    {
+        "valor":  1,
+        "zona_id":  1,
+        "descripcion":  "Naranja #18",
+        "epc":  "E2806915000050220F87C1D1"
+    },
+    {
+        "valor":  1,
+        "zona_id":  1,
+        "descripcion":  "Naranja #19",
+        "epc":  "E2806915000050220F87CDD1"
+    },
+    {
+        "valor":  1,
+        "zona_id":  1,
+        "descripcion":  "Naranja #20",
+        "epc":  "E280691500005026A683720D"
+    },
+    {
+        "valor":  1,
+        "zona_id":  1,
+        "descripcion":  "Rosado #1",
+        "epc":  "E2806915000040220F88D1D1"
+    },
+    {
+        "valor":  1,
+        "zona_id":  1,
+        "descripcion":  "Rosado #2",
+        "epc":  "E2806915000040220F88DDD1"
+    },
+    {
+        "valor":  1,
+        "zona_id":  1,
+        "descripcion":  "Rosado #3",
+        "epc":  "E2806915000040220F88E1D1"
+    },
+    {
+        "valor":  1,
+        "zona_id":  1,
+        "descripcion":  "Rosado #4",
+        "epc":  "E2806915000040220F88EDD1"
+    },
+    {
+        "valor":  1,
+        "zona_id":  1,
+        "descripcion":  "Rosado #5",
+        "epc":  "E2806915000040220F88F5D1"
+    },
+    {
+        "valor":  1,
+        "zona_id":  1,
+        "descripcion":  "Rosado #6",
+        "epc":  "E2806915000040220F88F9D1"
+    },
+    {
+        "valor":  1,
+        "zona_id":  1,
+        "descripcion":  "Rosado #7",
+        "epc":  "E2806915000040220F8901D1"
+    },
+    {
+        "valor":  1,
+        "zona_id":  1,
+        "descripcion":  "Rosado #8",
+        "epc":  "E2806915000040220F890DD1"
+    },
+    {
+        "valor":  1,
+        "zona_id":  1,
+        "descripcion":  "Rosado #9",
+        "epc":  "E2806915000040220F8915D1"
+    },
+    {
+        "valor":  1,
+        "zona_id":  1,
+        "descripcion":  "Rosado #10",
+        "epc":  "E2806915000040220F8919D1"
+    },
+    {
+        "valor":  1,
+        "zona_id":  1,
+        "descripcion":  "Rosado #11",
+        "epc":  "E2806915000050220F88CDD1"
+    },
+    {
+        "valor":  1,
+        "zona_id":  1,
+        "descripcion":  "Rosado #12",
+        "epc":  "E2806915000050220F88D5D1"
+    },
+    {
+        "valor":  1,
+        "zona_id":  1,
+        "descripcion":  "Rosado #13",
+        "epc":  "E2806915000050220F88D9D1"
+    },
+    {
+        "valor":  1,
+        "zona_id":  1,
+        "descripcion":  "Rosado #14",
+        "epc":  "E2806915000050220F88E5D1"
+    },
+    {
+        "valor":  1,
+        "zona_id":  1,
+        "descripcion":  "Rosado #15",
+        "epc":  "E2806915000050220F88E9D1"
+    },
+    {
+        "valor":  1,
+        "zona_id":  1,
+        "descripcion":  "Rosado #16",
+        "epc":  "E2806915000050220F88F1D1"
+    },
+    {
+        "valor":  1,
+        "zona_id":  1,
+        "descripcion":  "Rosado #17",
+        "epc":  "E2806915000050220F88FDD1"
+    },
+    {
+        "valor":  1,
+        "zona_id":  1,
+        "descripcion":  "Rosado #18",
+        "epc":  "E2806915000050220F8905D1"
+    },
+    {
+        "valor":  1,
+        "zona_id":  1,
+        "descripcion":  "Rosado #19",
+        "epc":  "E2806915000050220F8909D1"
+    },
+    {
+        "valor":  1,
+        "zona_id":  1,
+        "descripcion":  "Rosado #20",
+        "epc":  "E2806915000050220F8911D1"
+    },
+    {
+        "valor":  1,
+        "zona_id":  1,
+        "descripcion":  "Celeste #1",
+        "epc":  "E2806915000040220F87DDD1"
+    },
+    {
+        "valor":  1,
+        "zona_id":  1,
+        "descripcion":  "Celeste #2",
+        "epc":  "E2806915000040220F87E1D1"
+    },
+    {
+        "valor":  1,
+        "zona_id":  1,
+        "descripcion":  "Celeste #3",
+        "epc":  "E2806915000040220F87EDD1"
+    },
+    {
+        "valor":  1,
+        "zona_id":  1,
+        "descripcion":  "Celeste #4",
+        "epc":  "E2806915000040220F87F5D1"
+    },
+    {
+        "valor":  1,
+        "zona_id":  1,
+        "descripcion":  "Celeste #5",
+        "epc":  "E2806915000040220F8805D1"
+    },
+    {
+        "valor":  1,
+        "zona_id":  1,
+        "descripcion":  "Celeste #6",
+        "epc":  "E2806915000040220F8809D1"
+    },
+    {
+        "valor":  1,
+        "zona_id":  1,
+        "descripcion":  "Celeste #7",
+        "epc":  "E2806915000040220F8811D1"
+    },
+    {
+        "valor":  1,
+        "zona_id":  1,
+        "descripcion":  "Celeste #8",
+        "epc":  "E2806915000040220F881DD1"
+    },
+    {
+        "valor":  1,
+        "zona_id":  1,
+        "descripcion":  "Celeste #9",
+        "epc":  "E2806915000050220F87D5D1"
+    },
+    {
+        "valor":  1,
+        "zona_id":  1,
+        "descripcion":  "Celeste #10",
+        "epc":  "E2806915000050220F87D9D1"
+    },
+    {
+        "valor":  1,
+        "zona_id":  1,
+        "descripcion":  "Celeste #11",
+        "epc":  "E2806915000050220F87E5D1"
+    },
+    {
+        "valor":  1,
+        "zona_id":  1,
+        "descripcion":  "Celeste #12",
+        "epc":  "E2806915000050220F87E9D1"
+    },
+    {
+        "valor":  1,
+        "zona_id":  1,
+        "descripcion":  "Celeste #13",
+        "epc":  "E2806915000050220F87F1D1"
+    },
+    {
+        "valor":  1,
+        "zona_id":  1,
+        "descripcion":  "Celeste #14",
+        "epc":  "E2806915000050220F87FDD1"
+    },
+    {
+        "valor":  1,
+        "zona_id":  1,
+        "descripcion":  "Celeste #15",
+        "epc":  "E2806915000050220F8801D1"
+    },
+    {
+        "valor":  1,
+        "zona_id":  1,
+        "descripcion":  "Celeste #16",
+        "epc":  "E2806915000050220F880DD1"
+    },
+    {
+        "valor":  1,
+        "zona_id":  1,
+        "descripcion":  "Celeste #17",
+        "epc":  "E2806915000050220F8819D1"
+    },
+    {
+        "valor":  1,
+        "zona_id":  1,
+        "descripcion":  "Celeste #18",
+        "epc":  "E2806915000050220F8815D1"
+    },
+    {
+        "valor":  1,
+        "zona_id":  1,
+        "descripcion":  "Celeste #19",
+        "epc":  "E2806915000040220F87F9D1"
+    },
+    {
+        "valor":  1,
+        "zona_id":  1,
+        "descripcion":  "Celeste #20",
+        "epc":  "E2806915000040220F8821D1"
+    },
+    {
+        "valor":  1,
+        "zona_id":  1,
+        "descripcion":  "Premio #1",
+        "epc":  "E2806915000050220F8775D1"
+    },
+    {
+        "valor":  1,
+        "zona_id":  1,
+        "descripcion":  "Premio #2",
+        "epc":  "E2806915000040220F8781D1"
+    },
+    {
+        "valor":  1,
+        "zona_id":  1,
+        "descripcion":  "Premio #3",
+        "epc":  "E2806915000050220F8779D1"
+    },
+    {
+        "valor":  1,
+        "zona_id":  1,
+        "descripcion":  "Premio #4",
+        "epc":  "E2806915000040220F8771D1"
+    },
+    {
+        "valor":  1,
+        "zona_id":  1,
+        "descripcion":  "Premio #5",
+        "epc":  "E2806915000040220F877DD1"
     }
 ]

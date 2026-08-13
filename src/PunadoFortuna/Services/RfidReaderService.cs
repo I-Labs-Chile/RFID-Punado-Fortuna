@@ -65,7 +65,7 @@ public class RfidReaderService : IDisposable
             try
             {
                 LogReaderCapabilities();
-                ConfigureAntenna(2);
+                ConfigureAvailableAntennas();
                 _reader.Config.SaveLlrpConfig(IntPtr.Zero);
                 _logger.LogInformation("Configuración LLRP persistida en reader (SaveLlrpConfig)");
             }
@@ -202,6 +202,24 @@ public class RfidReaderService : IDisposable
         }
 
         _logger.LogInformation("=== FIN CAPACIDADES ===");
+    }
+
+    private void ConfigureAvailableAntennas()
+    {
+        if (_reader == null) return;
+
+        var antennas = _reader.Config.Antennas.AvailableAntennas;
+        if (antennas == null || antennas.Length == 0)
+        {
+            _logger.LogWarning("No hay antenas disponibles en el reader. Usando config default.");
+            return;
+        }
+
+        _logger.LogInformation("Configurando {Count} antenas: [{Antennas}]",
+            antennas.Length, string.Join(", ", antennas));
+
+        foreach (var antennaId in antennas)
+            ConfigureAntenna(antennaId);
     }
 
     private void ConfigureAntenna(int antennaId)
