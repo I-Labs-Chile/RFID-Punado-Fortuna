@@ -34,9 +34,15 @@ public class GameEngine
 
     public void ProcessTags(List<TagRead> tags)
     {
-        if (_phase != GamePhase.WAITING) return;
+        if (_phase != GamePhase.WAITING)
+        {
+            _logger.LogDebug("ProcessTags: fase={Phase}, ignorando", _phase);
+            return;
+        }
 
         var seen = tags.Select(t => t.Epc).Distinct().ToHashSet();
+        _logger.LogInformation("ProcessTags: {Count} tags, EPCs: [{Epcs}], fase={Phase}",
+            tags.Count, string.Join(", ", seen), _phase);
         bool changed = false;
 
         foreach (var epc in seen)
@@ -68,6 +74,8 @@ public class GameEngine
         if (nowStable != _wasStable || (changed && _presentEpcs.Count == 0))
         {
             _wasStable = nowStable;
+            _logger.LogInformation("GameEngine: Estado cambió. presentEpcs={Count}, stable={Stable}, phase={Phase}",
+                _presentEpcs.Count, nowStable, _phase);
             EmitState();
         }
     }

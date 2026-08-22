@@ -23,15 +23,16 @@
     amarillo: '#ffdd00',
     naranja: '#ff8800',
     morado: '#9944ff',
+    rosa: '#ff66aa',
     rosado: '#ff66aa',
+    celeste: '#66ccff',
     blanco: '#eeeeee',
     negro: '#333333',
     gris: '#888888',
     marron: '#8B4513',
     turquesa: '#00ccbb',
-    celeste: '#66ccff',
-    premio: '#ffcc00',
-    desconocido: '#666688'
+    desconocido: '#666688',
+    premio: '#ffd700'
   };
 
   function showBanner(text, cls) {

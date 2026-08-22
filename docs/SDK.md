@@ -104,6 +104,51 @@ dotnet run -- --no-sim
 
 ---
 
+## API — Detección de antenas conectadas
+
+### Propiedades físicas por antena
+
+```csharp
+// Obtener antenas disponibles (todas las que soporta el hardware)
+ushort[] availableAntennas = reader.Config.Antennas.AvailableAntennas;
+
+foreach (ushort antId in availableAntennas)
+{
+    // Obtener propiedades físicas de cada puerto
+    Antennas.AntennaProperties physicalProps = reader.Config.Antennas[antId].GetPhysicalProperties();
+
+    if (physicalProps.IsConnected)
+    {
+        Console.WriteLine($"Antena {antId}: CONECTADA (gain={physicalProps.AntennaGain}dB)");
+    }
+    else
+    {
+        Console.WriteLine($"Antena {antId}: desconectada");
+    }
+}
+```
+
+### Configuración RF por antena
+
+```csharp
+// Obtener configuración actual
+Antennas.Config config = reader.Config.Antennas[antId].GetConfig();
+
+// Modificar y aplicar
+config.TransmitPowerIndex = 70;  // potencia TX
+config.ReceiveSensitivityIndex = 5;  // sensibilidad RX
+reader.Config.Antennas[antId].SetConfig(config);
+```
+
+### Persistencia LLRP
+
+```csharp
+// Guardar configuración en el reader (sobrevive reinicios)
+reader.Config.SaveLlrpConfig(IntPtr.Zero);
+```
+
+---
+
 ## Notas
 
 - El SDK es síncrono. Las operaciones se ejecutan en `Task.Run()` para no bloquear el event loop de ASP.NET.
@@ -111,3 +156,4 @@ dotnet run -- --no-sim
 - La DLL nativa `RFIDAPI32PC.dll` debe estar en el output directory. El .csproj la copia automáticamente con `CopyToOutputDirectory`.
 - Solo compatible con **Windows**. El SDK requiere .NET Framework y DLLs nativas Win32.
 - Puerto LLRP estándar: **5084**. Puerto seguro (SSL): **5085**.
+- `PhysicalProperties.IsConnected` indica si hay antena físicamente conectada al puerto.

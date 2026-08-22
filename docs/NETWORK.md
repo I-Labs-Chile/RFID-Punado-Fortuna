@@ -90,6 +90,12 @@ Cómo saber la IP del FX9600:
 El `DeviceDiscoveryService` ejecuta este pipeline en orden:
 
 ```
+0. Subnets comunes prioritarias (192.168.100.x, 192.168.1.x, 192.168.0.x)
+   └── TCP probe directo sobre :5084 (LLRP) en TODA la /24
+   └── No depende de ICMP (firewalls suelen bloquear ping)
+   └── Si encuentra LLRP OK → DEVICE FOUND (sale temprano)
+   └── Concurrencia limitada, timeout ≤ 1s por conexión
+
 1. GetActiveNetworkInterfaces()
    └── Enumera adaptadores de red activos (excluye virtuales, loopback, Hyper-V)
 
@@ -111,6 +117,10 @@ El `DeviceDiscoveryService` ejecuta este pipeline en orden:
    └── Si LLRP OK → DEVICE FOUND
 ```
 
+> **Nota:** el paso 0 se ejecuta primero porque el FX9600 suele vivir en una de esas
+> tres subnets (IP de fábrica `192.168.100.114`, o redes típicas de router).
+> El ping sweep de adaptadores queda como respaldo para conexión directa (APIPA).
+
 ---
 
 ## APIPA (Automatic Private IP Addressing)
@@ -131,6 +141,44 @@ El ping sweep cubre esta subnet completa, por eso encuentra al FX9600 sin import
 
 ```powershell
 ipconfig | Select-String "169.254"
+```
+
+---
+
+## Detección de antenas conectadas
+
+### Método actual (SDK)
+
+```csharp
+// Obtener todas las antenas del hardware
+ushort[] availableAntennas = reader.Config.Antennas.AvailableAntennas;
+
+// Verificar conexión física de cada puerto
+foreach (ushort antId in availableAntennas)
+{
+    var physicalProps = reader.Config.Antennas[antId].GetPhysicalProperties();
+    if (physicalProps.IsConnected)
+    {
+        Console.WriteLine($"Antena {antId}: CONECTADA (gain={physicalProps.AntennaGain}dB)");
+    }
+}
+```
+
+### Comportamiento
+
+- **FX9600 con 4 puertos**: `AvailableAntennas` retorna `[1, 2, 3, 4]`
+- **PhysicalProperties.IsConnected**: indica si hay antena físicamente enchufada
+- **Configuración automática**: solo se configuran puertos con antena conectada
+- **Fallback**: si no detecta ninguna, configura todas (por si el SDK falla)
+
+### Logs esperados
+
+```
+SDK: Antena 1: CONECTADA (gain=6dB)
+SDK: Antena 2: CONECTADA (gain=6dB)
+SDK: Antena 3: desconectada
+SDK: Antena 4: CONECTADA (gain=6dB)
+SDK: Configurando 3 antena(s) conectada(s): [1, 2, 4]
 ```
 
 Si aparece, la notebook ya está en modo APIPA. El FX9600 debería estarlo también.
@@ -168,6 +216,7 @@ Si no se instala Bonjour, el descubrimiento por mDNS falla silenciosamente y sol
 | Síntoma | Causa probable | Solución |
 |---|---|---|
 | `ipconfig` no muestra IP en el adaptador Ethernet | Cable suelto o driver faltante | Verificar cable, reinstalar driver |
+| El log muestra barrido en `169.254.x.x` sin conexión ethernet | Interfaz VPN activa (ej. Tailscale usa `169.254.x.x`) | El discovery ya excluye adaptadores VPN/tunnel (Tailscale, WireGuard, OpenVPN, etc.) |
 | Ping sweep encuentra 0 IPs | FX9600 apagado o en otra subnet | Verificar que el FX9600 esté encendido y el LED de link esté verde |
 | Ping sweep encuentra IPs pero LLRP falla | LLRP desactivado en el FX9600 | Entrar a la web UI del FX9600 y activar LLRP |
 | TCP 5084 rechaza conexión | Firewall bloqueando | Agregar regla de firewall o desactivar temporalmente |

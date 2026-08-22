@@ -71,22 +71,69 @@ builder.Services.AddSingleton(sp =>
 var fx9600Config = builder.Configuration.GetSection("Fx9600");
 var staticIp = fx9600Config["IpAddress"] ?? "auto";
 var port = int.TryParse(fx9600Config["Port"], out var p) ? p : 5084;
+var useSimulation = !args.Contains("--no-sim");
 
 Console.WriteLine("==========================================");
 Console.WriteLine("  Puñado de Fortuna - Iniciando...");
 Console.WriteLine("==========================================");
 
+var discoveryLogger = builder.Services.BuildServiceProvider()
+    .GetRequiredService<ILogger<DeviceDiscoveryService>>();
+
+var tcpTimeout = int.TryParse(fx9600Config["TcpTimeoutMs"], out var tcp) ? tcp : 2000;
+var pingTimeout = int.TryParse(fx9600Config["PingTimeoutMs"], out var ping) ? ping : 500;
+var maxConcurrency = int.TryParse(fx9600Config["MaxPingConcurrency"], out var mc) ? mc : 50;
+
 DeviceDiscoveryResult discoveryResult;
 
-if (staticIp.Equals("auto", StringComparison.OrdinalIgnoreCase))
+bool staticConfigured = !staticIp.Equals("auto", StringComparison.OrdinalIgnoreCase);
+
+if (staticConfigured && !useSimulation)
 {
-    var discoveryLogger = builder.Services.BuildServiceProvider()
-        .GetRequiredService<ILogger<DeviceDiscoveryService>>();
+    // Modo real con IP fija: verificar primero; si no responde, ejecutar el
+    // descubrimiento mejorado (192.168.100.x / 192.168.1.x / 192.168.0.x).
+    var discoveryService = new DeviceDiscoveryService(
+        discoveryLogger,
+        TimeSpan.FromMilliseconds(pingTimeout),
+        TimeSpan.FromMilliseconds(tcpTimeout),
+        maxConcurrency);
 
-    var tcpTimeout = int.TryParse(fx9600Config["TcpTimeoutMs"], out var tcp) ? tcp : 2000;
-    var pingTimeout = int.TryParse(fx9600Config["PingTimeoutMs"], out var ping) ? ping : 500;
-    var maxConcurrency = int.TryParse(fx9600Config["MaxPingConcurrency"], out var mc) ? mc : 50;
+    Console.WriteLine($"> Verificando IP fija: {staticIp}:{port}...");
+    var probe = await discoveryService.TcpProbeAsync(staticIp, port, CancellationToken.None);
 
+    if (probe)
+    {
+        discoveryResult = DeviceDiscoveryResult.FromConfig(staticIp, port);
+        Console.WriteLine($"> IP fija responde: {staticIp}:{port}");
+    }
+    else
+    {
+        Console.WriteLine($"> IP fija {staticIp} no responde. Ejecutando descubrimiento...");
+        discoveryResult = await discoveryService.DiscoverAsync(null, port);
+
+        if (discoveryResult.IpAddress != null)
+        {
+            Console.WriteLine($"> FX9600 encontrado en {discoveryResult.IpAddress}:{discoveryResult.Port}");
+            Console.WriteLine($"> Método: {discoveryResult.DiscoveryMethod}");
+            PersistDiscoveredIp(
+                Path.Combine(Directory.GetCurrentDirectory(), "appsettings.json"),
+                discoveryResult.IpAddress,
+                port);
+        }
+        else
+        {
+            Console.WriteLine($"> FX9600 NO encontrado. Se reintentará con la IP fija en background.");
+            discoveryResult = DeviceDiscoveryResult.FromConfig(staticIp, port);
+        }
+    }
+}
+else if (staticConfigured)
+{
+    discoveryResult = DeviceDiscoveryResult.FromConfig(staticIp, port);
+    Console.WriteLine($"> Usando IP fija: {staticIp}:{port}");
+}
+else
+{
     var discoveryService = new DeviceDiscoveryService(
         discoveryLogger,
         TimeSpan.FromMilliseconds(pingTimeout),
@@ -109,11 +156,6 @@ if (staticIp.Equals("auto", StringComparison.OrdinalIgnoreCase))
         Console.WriteLine("> FX9600 NO encontrado. Se seguirá buscando en background.");
     }
 }
-else
-{
-    discoveryResult = DeviceDiscoveryResult.FromConfig(staticIp, port);
-    Console.WriteLine($"> Usando IP fija: {staticIp}:{port}");
-}
 
 foreach (var diag in discoveryResult.Diagnostics)
     Console.WriteLine($"  [DIAG] {diag}");
@@ -121,8 +163,6 @@ foreach (var diag in discoveryResult.Diagnostics)
 Console.WriteLine("==========================================");
 
 builder.Services.AddSingleton(discoveryResult);
-
-var useSimulation = !args.Contains("--no-sim");
 
 builder.Services.AddSingleton(sp =>
 {

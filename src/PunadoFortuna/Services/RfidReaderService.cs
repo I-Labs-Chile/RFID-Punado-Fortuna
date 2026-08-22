@@ -65,7 +65,43 @@ public class RfidReaderService : IDisposable
             try
             {
                 LogReaderCapabilities();
-                ConfigureAvailableAntennas();
+
+                var availableAntennas = _reader.Config.Antennas.AvailableAntennas;
+                var connectedAntennas = new List<int>();
+
+                foreach (var antId in availableAntennas)
+                {
+                    try
+                    {
+                        var physicalProps = _reader.Config.Antennas[antId].GetPhysicalProperties();
+                        if (physicalProps.IsConnected)
+                        {
+                            connectedAntennas.Add(antId);
+                            _logger.LogInformation("Antena {AntennaId}: CONECTADA (gain={Gain}dB)", antId, physicalProps.AntennaGain);
+                        }
+                        else
+                        {
+                            _logger.LogInformation("Antena {AntennaId}: desconectada", antId);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogWarning(ex, "Antena {AntennaId}: no se pudo verificar estado", antId);
+                    }
+                }
+
+                if (connectedAntennas.Count == 0)
+                {
+                    _logger.LogWarning("No se detectaron antenas conectadas. Configurando todas las disponibles por defecto.");
+                    connectedAntennas = availableAntennas.Select(a => (int)a).ToList();
+                }
+
+                _logger.LogInformation("Configurando {Count} antena(s) conectada(s): [{Ids}]",
+                    connectedAntennas.Count, string.Join(", ", connectedAntennas));
+
+                foreach (var antId in connectedAntennas)
+                    ConfigureAntenna((ushort)antId);
+
                 _reader.Config.SaveLlrpConfig(IntPtr.Zero);
                 _logger.LogInformation("Configuración LLRP persistida en reader (SaveLlrpConfig)");
             }
@@ -75,8 +111,23 @@ public class RfidReaderService : IDisposable
             }
 
             _reader.Events.ReadNotify += OnReadNotify;
+            _reader.Events.AttachTagDataWithReadEvent = false;
+            _reader.Events.StatusNotify += OnStatusNotify;
+            _reader.Events.NotifyInventoryStartEvent = true;
+            _reader.Events.NotifyInventoryStopEvent = true;
+            _reader.Events.NotifyAccessStartEvent = true;
+            _reader.Events.NotifyAccessStopEvent = true;
+            _reader.Events.NotifyReaderDisconnectEvent = true;
+            _reader.Events.NotifyReaderExceptionEvent = true;
+            _reader.Events.NotifyBufferFullEvent = true;
+            _reader.Events.NotifyBufferFullWarningEvent = true;
+            _reader.Events.NotifyAntennaEvent = true;
+            _reader.Events.NotifyGPIEvent = true;
+            _reader.Events.NotifyTemperatureAlarmEvent = true;
 
+            _logger.LogInformation("SDK: Eventos registrados. Iniciando Inventory.Perform()...");
             _reader.Actions.Inventory.Perform();
+            _logger.LogInformation("SDK: Inventory.Perform() ejecutado OK");
 
             _sessionLogger.LogRaw("CONNECTION", $"Connected to {host}:{port} via SDK");
             _sessionLogger.LogRaw("LLRP_STARTED", $"Inventory started on {host}:{port}");
@@ -84,7 +135,7 @@ public class RfidReaderService : IDisposable
             IsConnected = true;
             ConnectionChanged?.Invoke(this, new RfidConnectionEventArgs { Connected = true });
 
-            _logger.LogInformation("SDK: Conectado y leyendo (antena 2, S1, Pop=32, DenseReader, persistido)");
+            _logger.LogInformation("SDK: Conectado y leyendo (antenas configuradas, S1, Pop=32, DenseReader, persistido)");
         });
     }
 
@@ -204,24 +255,6 @@ public class RfidReaderService : IDisposable
         _logger.LogInformation("=== FIN CAPACIDADES ===");
     }
 
-    private void ConfigureAvailableAntennas()
-    {
-        if (_reader == null) return;
-
-        var antennas = _reader.Config.Antennas.AvailableAntennas;
-        if (antennas == null || antennas.Length == 0)
-        {
-            _logger.LogWarning("No hay antenas disponibles en el reader. Usando config default.");
-            return;
-        }
-
-        _logger.LogInformation("Configurando {Count} antenas: [{Antennas}]",
-            antennas.Length, string.Join(", ", antennas));
-
-        foreach (var antennaId in antennas)
-            ConfigureAntenna(antennaId);
-    }
-
     private void ConfigureAntenna(int antennaId)
     {
         if (_reader == null) return;
@@ -243,11 +276,8 @@ public class RfidReaderService : IDisposable
         var rfConfig = _reader.Config.Antennas[antennaId].GetRfConfig();
         rfConfig.TransmitPowerIndex = (ushort)powerIndex;
         rfConfig.RfModeTableIndex = rfModeIndex;
-        rfConfig.AntennaStopTriggerConfig.StopTriggerType =
-            ANTENNA_STOP_TRIGGER_TYPE.ANTENNA_STOP_TRIGGER_TYPE_DURATION_MILLISECS;
-        rfConfig.AntennaStopTriggerConfig.AntennaStopConditionValue = 2000;
         _reader.Config.Antennas[antennaId].SetRfConfig(rfConfig);
-        _logger.LogInformation("SetRfConfig OK: Power={Pwr}, RFMode={Mode}, StopTrigger=2000ms",
+        _logger.LogInformation("SetRfConfig OK: Power={Pwr}, RFMode={Mode}, StopTrigger=NONE (continuous)",
             powerIndex, rfModeIndex);
 
         var sing = _reader.Config.Antennas[antennaId].GetSingulationControl();
@@ -308,12 +338,21 @@ public class RfidReaderService : IDisposable
 
     private void OnReadNotify(object? sender, Events.ReadEventArgs e)
     {
+        _logger.LogInformation("OnReadNotify invoked. reader={ReaderNull}, stopPolling={Stop}",
+            _reader == null, _stopPolling);
+
         if (_reader == null || _stopPolling) return;
 
         try
         {
             var rawTags = _reader.Actions.GetReadTags(100);
-            if (rawTags == null || rawTags.Length == 0) return;
+            if (rawTags == null || rawTags.Length == 0)
+            {
+                _logger.LogInformation("ReadNotify disparado: 0 tags");
+                return;
+            }
+
+            _logger.LogInformation("ReadNotify: {Count} tags raw recibidos", rawTags.Length);
 
             var tags = new List<TagRead>();
 
@@ -337,7 +376,7 @@ public class RfidReaderService : IDisposable
 
                 tags.Add(tag);
 
-                _logger.LogDebug(
+                _logger.LogInformation(
                     "TAG: {Epc} ANT:{Ant} RSSI:{Rssi} CNT:{Cnt} PHASE:{Phase} CH:{Ch}",
                     tag.Epc, tag.AntennaId, tag.PeakRssi, tag.SeenCount, tag.Phase, tag.ChannelIndex);
             }
@@ -351,6 +390,43 @@ public class RfidReaderService : IDisposable
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error procesando tags del SDK");
+        }
+    }
+
+    private void OnStatusNotify(object? sender, Events.StatusEventArgs e)
+    {
+        if (_reader == null) return;
+
+        try
+        {
+            var eventData = e.StatusEventData.StatusEventType;
+            _logger.LogInformation("StatusNotify: {EventType}", eventData);
+
+            switch (eventData)
+            {
+                case Events.STATUS_EVENT_TYPE.INVENTORY_START_EVENT:
+                    _logger.LogInformation("SDK: Inventario INICIADO por reader");
+                    break;
+                case Events.STATUS_EVENT_TYPE.INVENTORY_STOP_EVENT:
+                    _logger.LogWarning("SDK: Inventario DETENIDO por reader");
+                    break;
+                case Events.STATUS_EVENT_TYPE.DISCONNECTION_EVENT:
+                    _logger.LogError("SDK: Reader DESCONECTADO");
+                    break;
+                case Events.STATUS_EVENT_TYPE.READER_EXCEPTION_EVENT:
+                    _logger.LogError("SDK: Excepción del reader");
+                    break;
+                case Events.STATUS_EVENT_TYPE.BUFFER_FULL_EVENT:
+                    _logger.LogWarning("SDK: Buffer LLENO - tags perdidos");
+                    break;
+                case Events.STATUS_EVENT_TYPE.BUFFER_FULL_WARNING_EVENT:
+                    _logger.LogWarning("SDK: Buffer casi lleno");
+                    break;
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Error procesando StatusNotify");
         }
     }
 

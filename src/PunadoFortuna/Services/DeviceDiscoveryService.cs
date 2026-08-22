@@ -57,12 +57,35 @@ public class DeviceDiscoveryService
         _logger.LogInformation("Iniciando descubrimiento automático del FX9600...");
         var diagnostics = new List<string>();
         var candidates = new Dictionary<string, string>();
-        var scannedSubnets = new HashSet<string>();
+
+        // Subnets comunes prioritarias: 192.168.100.x, 192.168.1.x, 192.168.0.x
+        // TCP probe directo sobre LLRP (:5084) en TODA la /24.
+        // No depende de ICMP (muchas redes/firewalls bloquean el ping).
+        if (!ct.IsCancellationRequested)
+        {
+            diagnostics.Add("Barriendo subnets comunes 192.168.100.x / 192.168.1.x / 192.168.0.x (TCP LLRP)...");
+            var commonIp = await ProbeCommonSubnetsForLlrpAsync(port, ct);
+            if (commonIp != null)
+            {
+                diagnostics.Add($">>>>> FX9600 ENCONTRADO en {commonIp}:{port} (subnet común)");
+                var httpOk = await HttpProbeAsync(commonIp, ct);
+                return new DeviceDiscoveryResult
+                {
+                    IpAddress = commonIp,
+                    Port = port,
+                    DiscoveryMethod = "auto_common_subnet",
+                    LLRPReachable = true,
+                    HttpReachable = httpOk,
+                    Diagnostics = diagnostics
+                };
+            }
+            diagnostics.Add("  Ninguna subnet común respondió LLRP. Continuando con adaptadores activos...");
+        }
 
         var interfaces = GetActiveNetworkInterfaces();
         diagnostics.Add($"Adaptadores de red activos: {interfaces.Count}");
 
-        // Subnets descubiertas de los adaptadores activos
+        // Subnets descubiertas de los adaptadores activos (ej: conexión directa APIPA 169.254.x.x)
         foreach (var iface in interfaces)
         {
             if (ct.IsCancellationRequested) break;
@@ -71,7 +94,6 @@ public class DeviceDiscoveryService
 
             var subnet = GetSubnetBase(iface.IpAddress, iface.PrefixLength);
             var broadcast = GetBroadcast(iface.IpAddress, iface.PrefixLength);
-            scannedSubnets.Add(subnet);
 
             diagnostics.Add($"    Barriendo subnet {subnet}/...");
 
@@ -80,28 +102,6 @@ public class DeviceDiscoveryService
             {
                 if (!candidates.ContainsKey(ip))
                     candidates[ip] = "ping_sweep";
-            }
-        }
-
-        // Subnets LAN comunes (aunque no haya adaptador activo en esa subnet)
-        var commonSubnets = new[] { "192.168.100.0", "192.168.1.0", "192.168.0.0" };
-        foreach (var subnet in commonSubnets)
-        {
-            if (ct.IsCancellationRequested) break;
-            if (scannedSubnets.Contains(subnet)) continue;
-
-            diagnostics.Add($"    Barriendo subnet común {subnet}/24...");
-            var broadcast = GetBroadcast(subnet, 24);
-            var centerIp = subnet.Replace(".0", ".100");
-
-            var pingResults = await PingSweepAsync(subnet, broadcast, centerIp, ct);
-            foreach (var ip in pingResults)
-            {
-                if (!candidates.ContainsKey(ip))
-                {
-                    candidates[ip] = "common_sweep";
-                    diagnostics.Add($"      Ping OK: {ip}");
-                }
             }
         }
 
@@ -204,6 +204,13 @@ public class DeviceDiscoveryService
             if (nic.NetworkInterfaceType == NetworkInterfaceType.Loopback) continue;
             if (nic.Description?.Contains("Virtual", StringComparison.OrdinalIgnoreCase) == true) continue;
             if (nic.Description?.Contains("Hyper-V", StringComparison.OrdinalIgnoreCase) == true) continue;
+            if (nic.Description?.Contains("Tunnel", StringComparison.OrdinalIgnoreCase) == true) continue;
+            if (nic.Description?.Contains("Tailscale", StringComparison.OrdinalIgnoreCase) == true) continue;
+            if (nic.Description?.Contains("WireGuard", StringComparison.OrdinalIgnoreCase) == true) continue;
+            if (nic.Description?.Contains("OpenVPN", StringComparison.OrdinalIgnoreCase) == true) continue;
+            if (nic.Description?.Contains("ZeroTier", StringComparison.OrdinalIgnoreCase) == true) continue;
+            if (nic.Description?.Contains("VirtualBox", StringComparison.OrdinalIgnoreCase) == true) continue;
+            if (nic.Description?.Contains("VMware", StringComparison.OrdinalIgnoreCase) == true) continue;
 
             try
             {
@@ -427,6 +434,68 @@ public class DeviceDiscoveryService
         }
 
         return results;
+    }
+
+    /// <summary>
+    /// Prueba TCP directa (puerto LLRP) sobre toda la /24 de las subnets comunes
+    /// 192.168.100.x, 192.168.1.x y 192.168.0.x. Devuelve la primera IP que acepta.
+    /// </summary>
+    public async Task<string?> ProbeCommonSubnetsForLlrpAsync(int port, CancellationToken ct)
+    {
+        var prefixes = new[] { "192.168.100", "192.168.1", "192.168.0" };
+        var semaphore = new SemaphoreSlim(_maxConcurrency);
+        var connectTimeout = TimeSpan.FromMilliseconds(
+            Math.Min((int)_tcpTimeout.TotalMilliseconds, 1000));
+        string? found = null;
+
+        _logger.LogInformation(
+            "Barriendo subnets comunes 192.168.100.x / 192.168.1.x / 192.168.0.x (TCP :{Port})...", port);
+
+        var tasks = new List<Task>();
+        foreach (var prefix in prefixes)
+        {
+            if (ct.IsCancellationRequested) break;
+
+            for (int i = 1; i <= 254; i++)
+            {
+                if (Volatile.Read(ref found) != null) break;
+                var ip = $"{prefix}.{i}";
+
+                tasks.Add(Task.Run(async () =>
+                {
+                    bool acquired = false;
+                    try
+                    {
+                        await semaphore.WaitAsync(ct);
+                        acquired = true;
+                        if (Volatile.Read(ref found) != null) return;
+
+                        using var cts = CancellationTokenSource.CreateLinkedTokenSource(ct);
+                        cts.CancelAfter(connectTimeout);
+
+                        using var client = new TcpClient();
+                        await client.ConnectAsync(ip, port, cts.Token);
+                        Volatile.Write(ref found, ip);
+                    }
+                    catch
+                    {
+                    }
+                    finally
+                    {
+                        if (acquired) semaphore.Release();
+                    }
+                }, ct));
+            }
+        }
+
+        await Task.WhenAll(tasks);
+
+        if (found != null)
+            _logger.LogInformation("  LLRP OK en {Ip}:{Port} (subnet común)", found, port);
+        else
+            _logger.LogInformation("  Ningún host respondió LLRP en las subnets comunes");
+
+        return found;
     }
 
     public async Task<bool> TcpProbeAsync(string ip, int port, CancellationToken ct)
