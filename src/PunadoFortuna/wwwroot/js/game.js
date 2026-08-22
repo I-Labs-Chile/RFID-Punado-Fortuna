@@ -11,10 +11,26 @@
   var connDot = document.getElementById('connDot');
   var connLabel = document.getElementById('connLabel');
   var reconnectBanner = document.getElementById('reconnectBanner');
+  var winOverlay = document.getElementById('winOverlay');
+  var winTitle = document.getElementById('winTitle');
+  var confettiLayer = document.getElementById('confettiLayer');
 
   var connection = null;
   var connected = false;
   var currentPhase = 'WAITING';
+  var hasWon = false;
+  var winVisible = false;
+
+  var WIN_MESSAGES = [
+    '¡LA FORTUNA TE SONRÍE!',
+    '¡PUÑADO DORADO!',
+    '¡PREMIO MAYOR!',
+    '¡LAS FICHAS TE ELIGIERON!',
+    '¡SUERTE DE CAMPEÓN!',
+    '¡EL TESORO ES TUYO!'
+  ];
+
+  var CONFETTI_COLORS = ['#e6a700', '#ffd54d', '#b57e00', '#0080ff', '#7c3aed', '#0e9f52', '#ff66aa'];
 
   var COLORS = {
     rojo: '#ff4444',
@@ -76,9 +92,57 @@
     }
   }
 
+  function hasPrize(state) {
+    return !!(state.colorBreakdown && state.colorBreakdown.premio > 0);
+  }
+
+  function triggerWin() {
+    if (hasWon || winVisible) return;
+    hasWon = true;
+    winVisible = true;
+
+    winTitle.textContent = WIN_MESSAGES[Math.floor(Math.random() * WIN_MESSAGES.length)];
+    buildConfetti();
+    winOverlay.classList.remove('hidden');
+  }
+
+  function closeWin() {
+    if (!winVisible) return;
+    winVisible = false;
+    confettiLayer.innerHTML = '';
+    winOverlay.classList.add('hidden');
+  }
+
+  function buildConfetti() {
+    var html = '';
+    for (var i = 0; i < 42; i++) {
+      var left = Math.random() * 100;
+      var delay = (Math.random() * 2.2).toFixed(2);
+      var duration = (2.6 + Math.random() * 2.4).toFixed(2);
+      var drift = Math.round((Math.random() - 0.5) * 220);
+      var spin = Math.round(360 + Math.random() * 900);
+      var color = CONFETTI_COLORS[i % CONFETTI_COLORS.length];
+      var round = Math.random() < 0.3 ? ' round' : '';
+      html += '<span class="confetti-piece' + round + '" style="left:' + left.toFixed(1) + '%;background:' + color +
+        ';animation-delay:' + delay + 's;animation-duration:' + duration + 's;' +
+        '--drift:' + drift + 'px;--spin:' + spin + 'deg;"></span>';
+    }
+    confettiLayer.innerHTML = html;
+  }
+
   function renderState(state) {
     if (!state) return;
     currentPhase = state.phase;
+    var roundStarted = state.phase !== 'WAITING';
+
+    // Premio: solo tras iniciar la ronda, con latch hasta reset
+    if (roundStarted && hasPrize(state)) {
+      triggerWin();
+    } else if (winVisible && state.phase === 'WAITING' && !hasPrize(state)) {
+      // Reset externo: cerrar overlay y rearmar
+      hasWon = false;
+      closeWin();
+    }
 
     // Badge
     phaseBadge.textContent = getPhaseText(state);
@@ -133,6 +197,7 @@
   }
 
   function advancePhase() {
+    if (winVisible || hasWon) return;
     if (connection && connected) {
       connection.invoke('AdvancePhase').catch(function (err) {
         console.error('AdvancePhase error:', err);
@@ -141,6 +206,11 @@
   }
 
   function reset() {
+    // F1 siempre rearma la partida, incluso con el overlay de premio abierto
+    if (winVisible) {
+      hasWon = false;
+      closeWin();
+    }
     if (connection && connected) {
       connection.invoke('Reset').catch(function (err) {
         console.error('Reset error:', err);

@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Puñado de Fortuna — MODO TEST</title>
+  <link rel="stylesheet" href="/css/game.css?v=3">
+  <style>
+    /* ---- PANEL DE TESTEO (solo test.html) ---- */
+    body.test-page { padding-right: 348px; }
+
+    .test-panel {
+      position: fixed;
+      top: 0; right: 0; bottom: 0;
+      width: 332px;
+      z-index: 300;
+      background: #10182c;
+      color: #dbe4f7;
+      font-family: var(--font-tech);
+      font-size: 12px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: -12px 0 40px rgba(16, 24, 44, 0.45);
+    }
+
+    .test-panel .tp-head {
+      padding: 14px 16px 10px;
+      border-bottom: 1px solid #223052;
+    }
+
+    .test-panel h2 {
+      font-size: 14px;
+      letter-spacing: 0.2em;
+      color: #ffd54d;
+      margin: 0 0 4px;
+    }
+
+    .test-panel .tp-head p {
+      margin: 0;
+      color: #8fa0c5;
+      line-height: 1.5;
+      font-size: 11px;
+    }
+
+    .test-scroll {
+      flex: 1;
+      overflow-y: auto;
+      padding: 12px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .test-section-title {
+      font-size: 10px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: #6f80a8;
+      margin-bottom: 6px;
+    }
+
+    .test-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+    }
+
+    .test-btn {
+      border: 1px solid #2a3a63;
+      background: #18233f;
+      color: #dbe4f7;
+      font-family: inherit;
+      font-size: 11px;
+      letter-spacing: 0.04em;
+      padding: 8px 6px;
+      border-radius: 7px;
+      cursor: pointer;
+      text-align: center;
+      transition: background 0.15s, border-color 0.15s;
+    }
+
+    .test-btn:hover { background: #223055; border-color: #3d518a; }
+    .test-btn:active { background: #2b3c6b; }
+    .test-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+    .test-btn.wide { grid-column: 1 / -1; }
+
+    .test-btn.gold { background: #3a2e08; border-color: #7a5c00; color: #ffd54d; }
+    .test-btn.gold:hover { background: #4d3d0b; }
+
+    .test-btn.green { background: #0c2e1d; border-color: #1c5c3a; color: #7dedae; }
+    .test-btn.green:hover { background: #11402a; }
+
+    .test-btn.red { background: #38141a; border-color: #7a2830; color: #ff9aa2; }
+    .test-btn.red:hover { background: #481a21; }
+
+    .test-btn.blue { background: #0e2340; border-color: #245091; color: #8ec7ff; }
+    .test-btn.blue:hover { background: #143056; }
+
+    textarea#jsonInput {
+      width: 100%;
+      min-height: 84px;
+      resize: vertical;
+      background: #0b1224;
+      color: #cfe0ff;
+      border: 1px solid #2a3a63;
+      border-radius: 7px;
+      font-family: ui-monospace, Consolas, monospace;
+      font-size: 10.5px;
+      padding: 8px;
+      outline: none;
+    }
+
+    textarea#jsonInput:focus { border-color: #3d518a; }
+
+    #testLog {
+      flex: 1;
+      min-height: 120px;
+      overflow-y: auto;
+      background: #070c19;
+      border-top: 1px solid #223052;
+      padding: 10px 12px;
+      font-family: ui-monospace, Consolas, monospace;
+      font-size: 10px;
+      line-height: 1.55;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    #testLog .t-emit { color: #8ec7ff; }
+    #testLog .t-invoke { color: #d0aaff; }
+    #testLog .t-key { color: #ffcf7a; }
+    #testLog .t-pass { color: #7dedae; font-weight: bold; }
+    #testLog .t-fail { color: #ff9aa2; font-weight: bold; }
+    #testLog .t-info { color: #8fa0c5; }
+    #testLog .t-warn { color: #ffd54d; }
+    #testLog time { color: #4d5f8a; margin-right: 6px; }
+  </style>
+</head>
+<body class="test-page">
+
+  <header class="header">
+    <img class="logo" src="/logo_i-labs_color.png" alt="i-labs">
+    <h1 class="title">Puñado de Fortuna</h1>
+    <div class="connection-indicator">
+      <span class="conn-dot" id="connDot"></span>
+      <span id="connLabel">---</span>
+    </div>
+  </header>
+
+  <main class="game-area">
+    <div class="phase-badge" id="phaseBadge">ESPERANDO PIEZAS</div>
+
+    <div class="tag-counter hidden" id="tagCounterContainer">
+      <div class="counter-label">PIEZAS DETECTADAS</div>
+      <div class="counter-value" id="tagCount">0</div>
+    </div>
+
+    <div class="color-grid hidden" id="colorGridContainer">
+      <div class="grid-label">COLORES</div>
+      <div class="grid" id="colorGrid"></div>
+    </div>
+
+    <div class="enter-hint" id="enterHint">PRESIONA ENTER PARA REVELAR</div>
+  </main>
+
+  <div class="win-overlay hidden" id="winOverlay">
+    <div class="confetti-layer" id="confettiLayer"></div>
+    <div class="win-content">
+      <div class="win-chip">Ficha premiada encontrada</div>
+      <h2 class="win-title" id="winTitle">¡LA FORTUNA TE SONRÍE!</h2>
+      <div class="win-subtitle">Tu puñado escondía el premio mayor</div>
+      <img class="win-logo" src="/logo_i-labs_color.png" alt="">
+      <div class="win-hint">Presiona F1 para jugar otra vez</div>
+    </div>
+  </div>
+
+  <aside class="test-panel" id="testPanel">
+    <div class="tp-head">
+      <h2>MODO TEST</h2>
+      <p>Mock de SignalR + máquina de estados del GameEngine.<br>
+         El <code>game.js</code> de producción corre sin modificaciones.</p>
+    </div>
+
+    <div class="test-scroll">
+      <div>
+        <div class="test-section-title">Escenarios de fase</div>
+        <div class="test-grid">
+          <button class="test-btn" data-scenario="waitingUnstable">WAITING inestable</button>
+          <button class="test-btn green" data-scenario="waitingStable">WAITING estable</button>
+          <button class="test-btn blue" data-scenario="revealCount">REVEAL_COUNT</button>
+          <button class="test-btn blue" data-scenario="guessColors">GUESS_COLORS</button>
+          <button class="test-btn wide" data-scenario="revealColors">REVEAL_COLORS multicolor</button>
+        </div>
+      </div>
+
+      <div>
+        <div class="test-section-title">Sistema de premios</div>
+        <div class="test-grid">
+          <button class="test-btn gold" data-scenario="premioRound">PREMIO tras ronda</button>
+          <button class="test-btn gold" data-scenario="premioWaiting">PREMIO en WAITING</button>
+        </div>
+      </div>
+
+      <div>
+        <div class="test-section-title">Conexión SignalR</div>
+        <div class="test-grid">
+          <button class="test-btn red" data-conn="reconnecting">RECONECTANDO</button>
+          <button class="test-btn red" data-conn="disconnected">DESCONECTADO</button>
+          <button class="test-btn green wide" data-conn="connected">RECONECTADO OK</button>
+        </div>
+      </div>
+
+      <div>
+        <div class="test-section-title">Flujo completo</div>
+        <div class="test-grid">
+          <button class="test-btn wide gold" id="btnAutoSeq">PARTIDA COMPLETA AUTO</button>
+          <button class="test-btn wide" id="btnKeyF1">Tecla F1 (reset real)</button>
+        </div>
+      </div>
+
+      <div>
+        <div class="test-section-title">Inyector JSON manual</div>
+        <textarea id="jsonInput" spellcheck="false">{
+  "phase": "REVEAL_COLORS",
+  "tagCount": 42,
+  "colorBreakdown": { "verde": 20, "azul": 22 },
+  "isStable": true
+}</textarea>
+        <div class="test-grid" style="margin-top:6px;">
+          <button class="test-btn wide" id="btnEmitJson">EMITIR ESTADO</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="testLog"></div>
+  </aside>
+
+  <!-- El mock DEBE cargarse antes que game.js -->
+  <script src="/js/test-harness.js"></script>
+  <script src="/js/game.js?v=3"></script>
+</body>
+</html>

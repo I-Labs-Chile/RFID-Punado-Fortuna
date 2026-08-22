@@ -174,11 +174,23 @@ RFID-Punado-Fortuna/
     │   └── SessionLogger.cs
     └── wwwroot/
         ├── index.html
+        ├── test.html                     ← MODO TEST (mock SignalR, sin hardware)
+        ├── logo_i-labs_color.png         ← logo institucional (header centrado)
         ├── css/
-        │   └── game.css
+        │   └── game.css                  ← modo claro + overlay de victoria
         └── js/
-            └── game.js
+            ├── game.js                   ← lógica de premio incluida
+            ├── signalr.min.js
+            └── test-harness.js           ← mock + escenarios (solo test.html)
 ```
+
+### Testeo visual sin hardware (`test.html`)
+
+- Abrir `https://<host>:puerto/test.html` (o por `file://`, todo es local).
+- `test-harness.js` define un **mock de `window.signalR`** que se carga ANTES de `game.js`: el frontend de producción corre sin modificaciones contra una máquina de estados que replica `GameEngine.cs` (fases, Reset limpia premio, TotalChips=105).
+- Panel derecho: escenarios de fase, sistema de premios, conexión (reconexión/desconexión), secuencia automática de partida completa con teclas reales (Enter/F1 despachadas como eventos), inyector JSON y consola de eventos.
+- Casos críticos auto-asertados: premio tras iniciar ronda → overlay; premio en WAITING → no gana.
+- El DOM del juego en `test.html` se mantiene sincronizado a mano con `index.html` (mismo markup, más el panel).
 
 ### Arquitectura
 

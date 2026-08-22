@@ -4,13 +4,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <title>Puñado de Fortuna</title>
-  <link rel="stylesheet" href="/css/game.css">
+  <link rel="stylesheet" href="/css/game.css?v=3">
 </head>
 <body>
 
   <div class="reconnect-banner" id="reconnectBanner">RECONECTANDO...</div>
 
   <header class="header">
+    <img class="logo" src="/logo_i-labs_color.png" alt="i-labs">
     <h1 class="title">Puñado de Fortuna</h1>
     <div class="connection-indicator">
       <span class="conn-dot" id="connDot"></span>
@@ -34,9 +35,20 @@
     <div class="enter-hint" id="enterHint">PRESIONA ENTER PARA REVELAR</div>
   </main>
 
+  <div class="win-overlay hidden" id="winOverlay">
+    <div class="confetti-layer" id="confettiLayer"></div>
+    <div class="win-content">
+      <div class="win-chip">Ficha premiada encontrada</div>
+      <h2 class="win-title" id="winTitle">¡LA FORTUNA TE SONRÍE!</h2>
+      <div class="win-subtitle">Tu puñado escondía el premio mayor</div>
+      <img class="win-logo" src="/logo_i-labs_color.png" alt="">
+      <div class="win-hint">Presiona F1 para jugar otra vez</div>
+    </div>
+  </div>
+
   <div class="shortcut-hint">F1: Reiniciar | ENTER: Avanzar</div>
 
   <script src="/js/signalr.min.js"></script>
-  <script src="/js/game.js?v=2"></script>
+  <script src="/js/game.js?v=3"></script>
 </body>
 </html>
